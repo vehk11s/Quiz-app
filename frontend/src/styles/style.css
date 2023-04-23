@@ -1,0 +1,17 @@
+main, header, footer{
+    min-width: 200px;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 50px;
+    background-color: antiquewhite;
+}
+
+#screen{
+    width: 90%;
+    height: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 50px;
+    background-color: rgb(252, 202, 138);
+}
