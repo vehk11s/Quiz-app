@@ -20,11 +20,9 @@ exports.add_game = async function (req, res) {
     newGame.questions.push(question.id);
   }
 
-  res.json(newGame);
-
-  /*   newGame.save().then((saved) => {
+  newGame.save().then((saved) => {
     res.json(saved);
-  }); */
+  });
 };
 
 // EDIT
