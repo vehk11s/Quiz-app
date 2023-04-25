@@ -57,6 +57,15 @@ exports.edit_category = async function (req,res) {
   }
 };
 
-
 // DELETE category
-//exports.delete_category  
+exports.delete_category = async function (req, res) {
+  try {
+    const id = req.params.id;
+    const deletedCategory = await Category.findByIdAndDelete(id);
+    res.send(`Category ${deletedCategory.category} has been deleted.`)
+  }
+  catch (error)
+  {
+    res.status(400).json({message:error.message});
+  }
+};
