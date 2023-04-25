@@ -7,4 +7,7 @@ routes
   .get(categoryController.get_categories)
   .post(categoryController.add_category);
 
+
+routes.route("/categories/:id").get(categoryController.get_category);
+
 module.exports = routes;
