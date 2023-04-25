@@ -39,8 +39,23 @@ exports.get_category = async function (req, res) {
   }
 };
 
-// PUT Update category
-//exports.edit_category
+// PUT Update category by id
+exports.edit_category = async function (req,res) {
+  try {
+    const id = req.params.id;
+    const updatedData = req.body;
+    const options = { new: true};
+
+    const result = await Category.findByIdAndUpdate(
+      id, updatedData, options
+    );
+
+    res.send(result);
+  }
+  catch (error) {
+    res.status(400).json({message: error.message});
+  }
+};
 
 
 // DELETE category

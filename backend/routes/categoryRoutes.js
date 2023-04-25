@@ -8,6 +8,6 @@ routes
   .post(categoryController.add_category);
 
 
-routes.route("/categories/:id").get(categoryController.get_category);
+routes.route("/categories/:id").get(categoryController.get_category).put(categoryController.edit_category);
 
 module.exports = routes;
