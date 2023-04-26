@@ -1,34 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz-app - index</title>
-    <link rel="stylesheet" href="styles/style.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz-app - Demo</title>
+    <link rel="stylesheet" href="styles/style.css" />
+  </head>
+  <body>
     <header>
-        <p>Header</p>
-        <nav>
-            <a href="#">Game</a>
-            <a href="#">Leaderboards</a>
-            <a href="#">Admin</a>
-        </nav>
+      <p class="title">Quiz App</p>
+      <nav>
+        <a href="#">Game</a>
+        <a href="#">Leaderboards</a>
+        <a href="#">Admin</a>
+      </nav>
     </header>
     <main>
-        <h1>Quiz-app</h1>
-        <div id="screen">
-            <h2>Question 1</h2>
-            <p>Is the world round?</p>
-            <button>1. yes</button>
-            <button>2. no</button>
-            <button>3. idk</button>
-            <button>4. maybe</button>
+      <p class="title">Category</p>
+      <div id="screen">
+        <p class="lg">Is the world round?</p>
+
+        <div class="options">
+          <button class="btn btn-option">1. yes</button>
+          <button class="btn btn-option">2. no</button>
+          <button class="btn btn-option">3. idk</button>
+          <button class="btn btn-option">
+            4. Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            Explicabo qui perferendis aliquam corporis facilis.
+          </button>
         </div>
-    </main>    
+      </div>
+      <div class="buttons">
+        <button class="btn btn-secondary">I'm a secondary button</button>
+        <button class="btn btn-primary">I'm a primary button</button>
+      </div>
+    </main>
     <footer>
-        <p>Footer</p>
+      <p>Footer</p>
     </footer>
-</body>
+  </body>
 </html>

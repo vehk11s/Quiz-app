@@ -1,18 +1,195 @@
-body{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@200;300;400;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Boogaloo&display=swap');
+
+:root {
+  --font-primary: 'Source Sans Pro', sans-serif;
+  --font-secondary: 'Boogaloo', cursive;
+
+  --primary-pink: #c61053;
+  --primary-pink-light: rgb(232, 68, 127);
+  --primary-pink-subtle: rgba(232, 68, 127, 0.15);
+  --primary-bg-gradient: linear-gradient(
+    143.21deg,
+    #840b36 16.1%,
+    #1f0012 89.5%
+  );
+
+  --primary-white: #f5ebeb;
+  --quiz-correct: #257d3d;
+  --quiz-incorrect: #980b24;
 }
 
-main, header, footer{
-    width: 1000px;
-    padding: 50px;
-    background-color: antiquewhite;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-#screen{
-    width: 90%;
-    height: 80%;
-    padding: 50px;
-    background-color: rgb(252, 202, 138);
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  color: var(--primary-white);
+  background-image: var(--primary-bg-gradient);
+  background-repeat: no-repeat;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+main,
+header,
+footer {
+  width: 1000px;
+  padding: 50px;
+}
+
+header,
+footer {
+  padding: 1rem 2rem;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  gap: 2rem;
+}
+
+header {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#screen {
+  width: 90%;
+  height: 80%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 8px;
+}
+
+/* Base typography styles */
+h1,
+h2,
+h3,
+h4,
+h5,
+p,
+a,
+button {
+  color: inherit;
+  font-family: var(--font-primary);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-weight: 600;
+}
+
+h1 {
+  font-size: 3.5rem;
+}
+
+h2 {
+  font-size: 3rem;
+}
+
+h3 {
+  font-size: 2.5rem;
+}
+
+h4 {
+  font-size: 2rem;
+}
+
+p.title {
+  font-size: 2.5rem;
+  font-family: var(--font-secondary);
+}
+
+p.lg {
+  font-size: 1.5rem;
+}
+
+p.sm {
+  font-size: 0.875rem;
+}
+
+/* Buttons */
+.btn {
+  padding: 8px 32px;
+  border-radius: 8px;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  transition: all 0.1s ease-out;
+  cursor: pointer;
+}
+
+.btn:has(svg) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn svg {
+  height: 1.15em;
+  width: 1.15em;
+}
+
+.btn-primary,
+.btn-option {
+  border: 2px solid var(--primary-pink);
+  background-color: var(--primary-pink);
+}
+
+.btn-primary:hover,
+.btn-option:hover {
+  border: 2px solid var(--primary-pink-light);
+  background-color: var(--primary-pink-light);
+}
+
+.btn-secondary {
+  border: 2px solid var(--primary-pink);
+  background-color: transparent;
+}
+
+.btn-secondary:hover {
+  border: 2px solid var(--primary-pink-light);
+  background-color: var(--primary-pink-subtle);
+}
+
+.btn-option {
+  font-size: 1.15rem;
+  height: 100%;
+  min-height: 6rem;
+  flex: 1;
+}
+
+.btn-option-correct {
+  border: 2px solid var(--quiz-correct);
+  background-color: var(--quiz-correct);
+}
+
+.btn-option-incorrect {
+  border: 2px solid var(--quiz-incorrect);
+  background-color: var(--quiz-incorrect);
 }
