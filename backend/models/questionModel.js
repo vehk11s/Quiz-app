@@ -20,8 +20,8 @@ const questionSchema = new Schema({
     default: 'multichoice',
   },
   options: [optionsSchema],
-  explanation: { type: String },
-  hint: { type: String },
+  explanation: { type: String, default: '' },
+  hint: { type: String, default: '' },
   category: { type: Schema.Types.ObjectId, ref: 'Category' },
 });
 
