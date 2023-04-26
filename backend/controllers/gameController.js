@@ -1,7 +1,9 @@
 const Game = require('../models/gameModel');
 const Question = require('../models/questionModel');
 
-
+/*
+  Checks that paramId is valid id number: 24 chars, contains only: 0-9, a-f and A-F characters
+*/
 const checkValidityOfId = (paramId) => {
 
   if ( !paramId )
@@ -12,6 +14,24 @@ const checkValidityOfId = (paramId) => {
     return false;
 
   return true;
+};
+
+/*
+  Creates array which hold n ammount of random entries got from param object.
+*/
+const getRandomQuestions = (param, n) => {
+  let questionIdArray = [];
+
+  //store all the question ids to array
+  for (question of param) {
+    questionIdArray.push(question.id);
+  }
+
+  // Shuffle array
+  let shuffled = questionIdArray.sort(() => 0.5 - Math.random());
+
+  // Get sub-array of first 10 elements after shuffled
+  return shuffled.slice(0, n);
 };
 
 
@@ -124,9 +144,14 @@ exports.add_game = async function (req, res) {
   const options = { new: true };
 
   try{
-    const questions = await Question.find({ category: updateData.category }, options);
+    const allQuestions = await Question.find({ category: updateData.category }, options);
     const newGame = new Game(updateData);
 
+
+    //get 10 random questions from selected category
+    let questions = getRandomQuestions(allQuestions, 10);
+
+    //store selected 10 questions to newGame
     for (question of questions) {
       newGame.questions.push(question.id);
     }
@@ -135,10 +160,9 @@ exports.add_game = async function (req, res) {
     
     //Check if saving was successfully
     if ( Object.keys(saved).length !== 0 ){
-      console.log("Saved new game");
-      console.log("Sending the data to frontend...");
+      console.log("Started new game");
       res.status(200).json(saved);
-      console.log("Game data has been sent to frontend.");
+      console.log("Saved new game to database");
     }
     else{
       console.log("Failed to save new game.");
