@@ -4,13 +4,9 @@ export async function updateGame(score, name = "Anonymous") {
 
   //todo add validation
   const id = localStorage.getItem("gameId");
-  
-  alert(id);
-
   let gameData = await getGameDataById(id);
 
-
-  console.log("Updating scores: " + gameData.answeredQuestions);
+  console.log("Updating scores: " + gameData[0].questionsAnswered);
 
   let data = {
     "player": name,
@@ -23,7 +19,6 @@ export async function updateGame(score, name = "Anonymous") {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   };
-
 
   try {
     let response = await fetch(SERVER + "/games", settings);
@@ -57,7 +52,7 @@ async function getGameDataById(id){
       return 0;
     }
 
-    return response;
+    return await response.json();
   }
   catch ( error ) {
     console.log("ERROR: Cannot update the game: ", error);
