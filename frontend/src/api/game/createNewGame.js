@@ -1,6 +1,8 @@
 const SERVER = "http://127.0.0.1:3000";
 
-//Todo get new game id and store it to localStorage
+/*
+  Creates new game with given arguments and stores new game id got from backend to localStorage.
+*/
 export async function createNewGame(category, difficulty) {
 
   let data = {

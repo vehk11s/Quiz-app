@@ -1,7 +1,14 @@
 import createNewGame from '../api/game/createNewGame.js';
 import updateGame from '../api/game/updateGame.js';
 
-//enum for different gameStates
+/*
+  enum for different gameStates
+  
+  - ERROR: when error happens during running the game
+  - STARTGAME: default state when player enters to site.
+  - QUESTIONS: state where questions is provided to player and player answers to them
+  - ENDING: state after the game is finnished. Shows scores to player etc. And maybe play again button (by pressing this the game state goes back to STARTGAME).
+*/
 const gameState = {
   ERROR: 0,
 	STARTGAME: 1,
@@ -31,7 +38,8 @@ const startNewGame = () => {
 
 
 /*
-  Keeps hold of current gameState
+  Keeps hold of current gameState.
+  gameState is stored in localStorage.
 */
 const gameStateMachine = () => {
 
@@ -42,6 +50,9 @@ const gameStateMachine = () => {
   if( !state ){
     state = gameState.STARTGAME;
   }
+
+  //Check gameState and act accordingly.
+  //Todo: Question phase, ending phase, proper error handling?
 
   switch( state ){
     case gameState.STARTGAME:
@@ -57,12 +68,15 @@ const gameStateMachine = () => {
         localStorage.setItem("gameState", gameState.ERROR);
       }
       break;
+    
     case gameState.QUESTIONS:
       //questions phase
       console.log("Question phase");
+
       //todo load questions, get next questions etc...
       if( updateGame(100) ){
         console.log("Question phase: gameUpdate succesfull");
+        //ending phase for testing purposes
         localStorage.setItem("gameState", gameState.ENDING);
       }
       else {
@@ -70,16 +84,22 @@ const gameStateMachine = () => {
       }
 
       break;
+
     case gameState.ENDING:
       //ending phase
 
       //Show points etc ask for new game?
 
-      console.log("Ending phase...");
+      console.log("Ending phase.");
+
+      //start game for testing purposes
       localStorage.setItem("gameState", gameState.STARTGAME);
       break;
+
     default:
-      //error
+
+      //Error state
+      console.log("Error phase.")
       resetGame(gameState.STARTGAME);
       break;
   }

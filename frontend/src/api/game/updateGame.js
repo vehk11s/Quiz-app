@@ -1,17 +1,23 @@
 const SERVER = "http://127.0.0.1:3000";
 
+
+/*
+  Updates game data based on gameId that is stored in localStorage.
+  At each step increases questionsAnswered variable by one.
+*/
 export async function updateGame(score, name = "Anonymous") {
 
   //todo add validation
   const id = localStorage.getItem("gameId");
+  
+  //get current gameData from database
   let gameData = await getGameDataById(id);
 
-  console.log("Updating scores: " + gameData[0].questionsAnswered);
-
+  //Create updated data to be stored in database
   let data = {
     "player": name,
     "score": parseInt(score),
-    "answeredQuestions": (gameData.answeredQuestions + 1)
+    "answeredQuestions": parseInt(gameData[0].questionsAnswered + 1)
   };
 
   const settings = {
@@ -21,10 +27,11 @@ export async function updateGame(score, name = "Anonymous") {
   };
 
   try {
-    let response = await fetch(SERVER + "/games", settings);
+    let response = await fetch(SERVER + "/games/" + id, settings);
+    let responseInJson = await response.json();
 
-    if (!response) {
-      console.log("Cannot update the game: ", response);
+    if (!responseInJson) {
+      console.log("Cannot update the game: ", responseInJson);
       return 0;
     }
 
@@ -36,7 +43,9 @@ export async function updateGame(score, name = "Anonymous") {
   }
 };
 
-
+/*
+  Gets game data by id from backend and returns it in json format.
+*/
 async function getGameDataById(id){
   
   const settings = {

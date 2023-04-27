@@ -198,7 +198,6 @@ exports.update_game = async function (req, res) {
     
     //Check if found any games
     if ( Object.keys(result).length !== 0 ){
-      console.log("Found game: " + gameId );
       console.log("Updating game data...");
       res.status(200).json(result);
       console.log("Game data has been updated.");
