@@ -161,8 +161,8 @@ exports.add_game = async function (req, res) {
     //Check if saving was successfully
     if ( Object.keys(saved).length !== 0 ){
       console.log("Started new game");
-      res.status(200).json(saved);
-      console.log("Saved new game to database");
+      res.status(200).json(saved._id);
+      console.log("Saved new game to database " + saved._id);
     }
     else{
       console.log("Failed to save new game.");

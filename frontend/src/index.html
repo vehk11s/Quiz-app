@@ -30,15 +30,37 @@
             Explicabo qui perferendis aliquam corporis facilis.
           </button>
         </div>
-      </div>
+
+        <!-- todo: get these values from database -->
+        <div class="options">
+          <fieldset>
+            <legend>Choose Category</legend>
+            <label for="cpp">C/C++</label>
+            <input type="radio" id="cpp" name="category" value="64490691a4962904fd5876fc" checked>
+            <label for="javascript">JavaScript</label>
+            <input type="radio" id="javascript" name="category" value="6446b1b0839b2adb69b0ecb0">
+          </fieldset>
+        </div>
+        <!-- todo CSS -->
+        <div class="options">
+          <fieldset>
+            <legend>Choose Difficulty</legend>
+            <label for="easy">Easy</label>
+            <input type="radio" id="easy" name="difficulty" value="easy" checked>
+            <label for="medium">Medium</label>
+            <input type="radio" id="medium" name="difficulty" value="medium">
+            <label for="hard">Hard</label>
+            <input type="radio" id="hard" name="difficulty" value="hard">
+          </fieldset>
+        </div>
       <div class="buttons">
         <button class="btn btn-secondary">I'm a secondary button</button>
-        <button class="btn btn-primary" onClick='createNewGame("64490691a4962904fd5876fc","easy")'>Start game</button>
+        <button class="btn btn-primary" id="btnStartGame">Start game</button>
       </div>
     </main>
     <footer>
       <p>Footer</p>
     </footer>
-    <script src="api/gameApi.js"></script>
+    <script type="module" src="js/game.js"></script>
   </body>
 </html>
