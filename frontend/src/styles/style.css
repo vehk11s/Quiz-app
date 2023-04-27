@@ -134,7 +134,8 @@ p.sm {
 }
 
 /* Buttons */
-.btn {
+.btn,
+input.btn {
   padding: 8px 32px;
   border-radius: 8px;
   font-size: 1rem;

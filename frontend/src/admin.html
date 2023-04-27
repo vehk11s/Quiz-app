@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz App - Admin</title>
+
+    <link rel="stylesheet" href="./styles/style.css" />
+
+    <style>
+      form {
+        width: 40rem;
+      }
+      label,
+      legend,
+      input {
+        font-family: 'Source Sans Pro';
+      }
+
+      fieldset {
+        border: none;
+        display: flex;
+        flex-direction: column;
+      }
+
+      label {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        color: rgba(255, 255, 255, 0.75);
+      }
+
+      input:not([type='submit']) {
+        border-radius: 4px;
+        border: none;
+        height: 2rem;
+        min-width: 2rem;
+      }
+
+      input.btn {
+        color: inherit;
+      }
+
+      .form__question {
+        padding-bottom: 1rem;
+        border-bottom: 1px solid black;
+        margin-bottom: 1rem;
+      }
+
+      .form__row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        column-gap: 8px;
+      }
+
+      .visually-hidden {
+        clip: rect(0 0 0 0);
+        clip-path: inset(50%);
+        height: 1px;
+        overflow: hidden;
+        position: absolute;
+        white-space: nowrap;
+        width: 1px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <form id="question_form" action="">
+      <p class="lg">Add questions</p>
+
+      <div class="form__content"></div>
+
+      <div class="form__footer">
+        <button id="add-question" class="btn btn-primary">Add Question</button>
+        <button id="submit-form" class="btn btn-primary">Save all</button>
+      </div>
+    </form>
+
+    <script type="module" src="js/questionForm.js"></script>
+  </body>
+</html>
