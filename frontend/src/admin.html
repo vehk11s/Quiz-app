@@ -9,6 +9,10 @@
     <link rel="stylesheet" href="./styles/style.css" />
 
     <style>
+      :root {
+        accent-color: var(--primary-pink-light);
+      }
+
       form {
         width: 40rem;
       }
@@ -43,6 +47,7 @@
       }
 
       .form__question {
+        position: relative;
         padding-bottom: 1rem;
         border-bottom: 1px solid black;
         margin-bottom: 1rem;
@@ -52,6 +57,25 @@
         display: grid;
         grid-template-columns: 1fr auto;
         column-gap: 8px;
+      }
+
+      .btn-icon {
+        position: absolute;
+        top: -16px;
+        right: 0;
+        font-size: 1.2rem;
+        padding: 0;
+        color: var(--primary-pink);
+        outline: 1px solid var(--primary-pink);
+        background-color: white;
+        border-radius: 50%;
+        border: none;
+      }
+
+      .btn-icon:hover {
+        color: var(--primary-pink-light);
+        outline: 1px solid white;
+        border-radius: 50%;
       }
 
       .visually-hidden {
