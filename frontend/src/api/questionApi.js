@@ -7,6 +7,18 @@ export const fetchQuestions = async () => {
   return questions;
 };
 
-export function postQuestion(data) {
-  console.log(data);
+export async function postQuestion(data) {
+  const settings = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data[0]),
+  };
+
+  await fetch(url, settings).then((result) => {
+    if (!result) {
+      result.status(400).send('Something went wrong');
+    } else {
+      result.status(200).json(result);
+    }
+  });
 }

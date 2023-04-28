@@ -39,9 +39,10 @@ function handleRemove(e) {
   visibleQuestions -= 1;
 }
 
-function handleSubmit() {
+function handleSubmit(e) {
   e.preventDefault();
 
+  const category = document.querySelector('input[name="category"]:checked').id;
   const questions = document.querySelectorAll('.form__question');
   const options = [];
   let formValues;
@@ -59,10 +60,11 @@ function handleSubmit() {
       });
     }
 
-    formData.push({ question: formValues[0].value, options });
+    formData.push({ question: formValues[0].value, options, category });
   });
 
   postQuestion(formData);
+  e.preventDefault();
 }
 
 function updateIndexing() {
