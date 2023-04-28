@@ -1,4 +1,10 @@
 import { postQuestion } from '../api/questionApi.js';
+import {
+  createFieldset,
+  createLegend,
+  createLabel,
+  createInput,
+} from './formHelpers.js';
 
 let totalQuestions = 1; // Doesn't decrease when removing a question
 let visibleQuestions = 1; // Tracks the visible question sets on display
@@ -24,9 +30,6 @@ submitBtn.addEventListener('click', (e) => {
   handleSubmit(e);
 });
 
-/*
-This function handles removing question sets from the form and decreasing the 
-TODO: This doesn't currently update question numbering, just removes the selected question */
 function handleRemove(e) {
   const form = document.querySelector('.form__content');
   const parentSet = e.target.closest('fieldset');
@@ -74,10 +77,13 @@ function updateIndexing() {
 function addQuestion() {
   const form = document.querySelector('.form__content');
 
-  const questionSet = createFieldset(
-    'question',
-    `${visibleQuestions}. Question`
-  );
+  const questionSet = createFieldset();
+  questionSet.classList.add('form__question');
+  questionSet.setAttribute('id', `Q${totalQuestions}-group`);
+  questionSet.appendChild(createRemoveBtn());
+
+  const questionLegend = createLegend(`${visibleQuestions}. Question`);
+  questionSet.appendChild(questionLegend);
 
   const questionLabel = createLabel(`Q${totalQuestions}`, 'Question');
   const questionInput = createInput(`Q${totalQuestions}`);
@@ -85,14 +91,18 @@ function addQuestion() {
   questionLabel.appendChild(questionInput);
 
   questionSet.appendChild(questionLabel);
-  questionSet.appendChild(createOptionInputs());
+  questionSet.appendChild(createOptions());
 
   form.appendChild(questionSet);
 }
 
-function createOptionInputs() {
+function createOptions() {
   // Create fieldset & legend for the options
-  const optionSet = createFieldset('options', 'Options');
+  const optionSet = createFieldset();
+  optionSet.classList.add('form__options');
+
+  const optionLabel = createLabel('Options');
+  optionSet.appendChild(optionLabel);
 
   for (let i = 1; i <= 4; i++) {
     // Create grouping elements for each option
@@ -105,6 +115,8 @@ function createOptionInputs() {
 
     const optionLabel = createLabel(`O${i}-description`, `${i}. Option`);
     const validLabel = createLabel(`O${i}-valid`, 'Valid');
+
+    // Hide "Valid" label visually from all but first
     if (i > 1) {
       validLabel.classList.add('visually-hidden');
     }
@@ -126,23 +138,6 @@ function createOptionInputs() {
   return optionSet;
 }
 
-function createFieldset(group, legendText) {
-  const fieldset = document.createElement('fieldset');
-  fieldset.classList.add(`form__${group}`);
-
-  if (group === 'question') {
-    fieldset.setAttribute('id', `Q${totalQuestions}-group`);
-    fieldset.appendChild(createRemoveBtn());
-  }
-
-  const legend = document.createElement('legend');
-  legend.textContent = legendText;
-
-  fieldset.appendChild(legend);
-
-  return fieldset;
-}
-
 function createRemoveBtn() {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
   <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
@@ -157,22 +152,6 @@ function createRemoveBtn() {
   });
 
   return button;
-}
-
-function createLabel(htmlFor, labelText) {
-  const label = document.createElement('label');
-  label.textContent = labelText;
-  label.setAttribute('for', htmlFor);
-
-  return label;
-}
-
-function createInput(id, type = 'text') {
-  const input = document.createElement('input');
-  input.setAttribute('type', type);
-  input.setAttribute('id', id);
-
-  return input;
 }
 
 function createRow() {
