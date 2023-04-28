@@ -38,8 +38,19 @@
         padding-bottom: 1rem;
       }
 
-      .form__question > legend {
-        margin-bottom: 1rem;
+      legend {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .form__options {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .form__options label {
+        margin-bottom: 0.25rem;
       }
 
       .form__row {
@@ -58,10 +69,10 @@
 
   <body>
     <form id="question_form" action="">
-      <p class="lg">Add questions</p>
+      <p class="xl">Add questions</p>
 
       <fieldset class="categories">
-        <legend>Select category</legend>
+        <legend class="lg">Select category</legend>
         <label class="row">
           <input
             type="radio"
