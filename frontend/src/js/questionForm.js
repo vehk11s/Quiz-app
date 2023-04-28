@@ -64,7 +64,6 @@ function handleSubmit() {
 
 function updateIndexing() {
   const legends = document.querySelectorAll('.form__question > legend');
-  console.log(legends);
 
   legends.forEach((legend, i) => {
     legend.textContent = '';

@@ -17,6 +17,8 @@
   --primary-white: #f5ebeb;
   --quiz-correct: #257d3d;
   --quiz-incorrect: #980b24;
+
+  accent-color: var(--primary-pink-light);
 }
 
 * {
@@ -35,6 +37,7 @@ body {
   color: var(--primary-white);
   background-image: var(--primary-bg-gradient);
   background-repeat: no-repeat;
+  background-attachment: fixed;
 
   display: flex;
   flex-direction: column;
@@ -193,4 +196,62 @@ input.btn {
 .btn-option-incorrect {
   border: 2px solid var(--quiz-incorrect);
   background-color: var(--quiz-incorrect);
+}
+
+.btn-icon {
+  font-size: 1.2rem;
+  padding: 0;
+  color: var(--primary-pink);
+  outline: 1px solid var(--primary-pink);
+  background-color: white;
+  border-radius: 50%;
+  border: none;
+}
+
+.btn-icon:hover {
+  color: var(--primary-pink-light);
+  outline: 1px solid white;
+  border-radius: 50%;
+}
+
+/* Form elements */
+form {
+  width: 40rem;
+}
+
+label,
+legend,
+input {
+  font-family: 'Source Sans Pro';
+}
+
+fieldset {
+  border: none;
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+input:not([type='submit']) {
+  border-radius: 4px;
+  border: none;
+  height: 2rem;
+  min-width: 2rem;
+}
+
+/* Misc */
+.visually-hidden {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
 }
