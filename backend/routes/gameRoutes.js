@@ -3,9 +3,7 @@ const routes = express.Router();
 const gameController = require('../controllers/gameController');
 
 //POST
-routes.route('/games').post(gameController.add_game);
-
-//GET
+routes.route('/games').post(gameController.add_game)
 routes.route('/games/').get(gameController.get_games);
 routes.route('/games/:game_id').get(gameController.get_game);
 routes.route('/games_by_category/:category_id').get(gameController.get_games_by_category);
