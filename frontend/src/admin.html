@@ -9,11 +9,17 @@
     <link rel="stylesheet" href="./styles/style.css" />
 
     <style>
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
       .categories {
         display: grid;
         gap: 0.5rem;
         grid-template-columns: 1fr 1fr 1fr;
-        padding-block: 1rem;
+        padding-block: 0.5rem;
       }
 
       .row {
@@ -23,9 +29,16 @@
       }
 
       .form__question {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
         position: relative;
-        padding-bottom: 1rem;
         border-bottom: 1px solid var(--primary-pink-light);
+        margin-top: 1rem;
+        padding-bottom: 1rem;
+      }
+
+      .form__question > legend {
         margin-bottom: 1rem;
       }
 
@@ -37,7 +50,7 @@
 
       .btn-icon {
         position: absolute;
-        top: -16px;
+        top: -32px;
         right: 0;
       }
     </style>
