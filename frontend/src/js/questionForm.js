@@ -6,11 +6,12 @@ import {
   createInput,
 } from './formHelpers.js';
 
-let totalQuestions = 1; // Doesn't decrease when removing a question
-let visibleQuestions = 1; // Tracks the visible question sets on display
+const addBtn = document.querySelector('#add-question');
+const submitBtn = document.querySelector('#submit-form');
 
-let addBtn = document.querySelector('#add-question');
-let submitBtn = document.querySelector('#submit-form');
+let AMT_OF_VISIBLE_QUESTIONS = 1; // Tracks the visible question sets on display, used for dynamical indexing
+let AMT_OF_TOTAL_QUESTIONS = 1; // Doesn't decrease when removing a question, used for element ids
+const AMT_OF_OPTIONS = 4; // Default amount of options for multichoice questions, used for loops
 
 // Create first question form element on load
 document.addEventListener('DOMContentLoaded', () => {
@@ -19,8 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 addBtn.addEventListener('click', (e) => {
-  totalQuestions += 1;
-  visibleQuestions += 1;
+  AMT_OF_TOTAL_QUESTIONS += 1;
+  AMT_OF_VISIBLE_QUESTIONS += 1;
   addQuestion();
   updateIndexing();
   e.preventDefault();
@@ -36,7 +37,7 @@ function handleRemove(e) {
 
   form.removeChild(parentSet);
   updateIndexing();
-  visibleQuestions -= 1;
+  AMT_OF_VISIBLE_QUESTIONS -= 1;
 }
 
 function handleSubmit(e) {
@@ -47,14 +48,17 @@ function handleSubmit(e) {
   const questionSets = document.querySelectorAll('.form__question'); // Select each question set by class name
 
   questionSets.forEach((questionSet) => {
-    const i = questionSet.id.slice(1, 2); // Get question number
+    const QUESTION_NUM = questionSet.id.slice(1, 2); // Get question number
     const questionOptions = [];
 
-    const questionInput = document.querySelector(`#Q${i}`);
+    const questionInput = document.querySelector(`#Q${QUESTION_NUM}`);
 
     // Select all corresponding options sets inside parent
-    for (let j = 1; j <= 4; j++) {
-      const optionSets = questionSet.querySelectorAll(`[id^='${i}O${j}']`);
+    for (let j = 1; j <= AMT_OF_OPTIONS; j++) {
+      const OPTION_NUM = j;
+      const optionSets = questionSet.querySelectorAll(
+        `[id^='${QUESTION_NUM}O${OPTION_NUM}']`
+      );
       questionOptions.push({
         option: optionSets[0].value,
         isCorrect: optionSets[1].checked,
@@ -77,8 +81,9 @@ function updateIndexing() {
   const legends = document.querySelectorAll('.form__question > legend');
 
   legends.forEach((legend, i) => {
+    const QUESTION_INDEX = i + 1;
     legend.textContent = '';
-    legend.textContent = `${i + 1}. Question`;
+    legend.textContent = `${QUESTION_INDEX}. Question`;
   });
 }
 
@@ -87,14 +92,14 @@ function addQuestion() {
 
   const questionSet = createFieldset();
   questionSet.classList.add('form__question');
-  questionSet.setAttribute('id', `Q${totalQuestions}-group`);
+  questionSet.setAttribute('id', `Q${AMT_OF_TOTAL_QUESTIONS}-group`);
   questionSet.appendChild(createRemoveBtn());
 
-  const questionLegend = createLegend(`${visibleQuestions}. Question`);
+  const questionLegend = createLegend(`${AMT_OF_VISIBLE_QUESTIONS}. Question`);
   questionSet.appendChild(questionLegend);
 
-  const questionLabel = createLabel(`Q${totalQuestions}`, 'Question');
-  const questionInput = createInput(`Q${totalQuestions}`);
+  const questionLabel = createLabel(`Q${AMT_OF_TOTAL_QUESTIONS}`, 'Question');
+  const questionInput = createInput(`Q${AMT_OF_TOTAL_QUESTIONS}`);
 
   questionLabel.appendChild(questionInput);
 
@@ -112,7 +117,8 @@ function createOptions() {
   const optionLabel = createLabel('Options');
   optionSet.appendChild(optionLabel);
 
-  for (let i = 1; i <= 4; i++) {
+  for (let i = 1; i <= AMT_OF_OPTIONS; i++) {
+    const OPTION_NUM = i;
     // Create grouping elements for each option
     const group = document.createElement('div');
     group.classList.add('form__group');
@@ -122,21 +128,29 @@ function createOptions() {
     const inputRow = createRow();
 
     const optionLabel = createLabel(
-      `${totalQuestions}O${i}-description`,
-      `${i}. Option`
+      `${AMT_OF_TOTAL_QUESTIONS}O${OPTION_NUM}-description`,
+      `${OPTION_NUM}. Option`
     );
-    const validLabel = createLabel(`${totalQuestions}O${i}-valid`, 'Valid');
+    const validLabel = createLabel(
+      `${AMT_OF_TOTAL_QUESTIONS}O${OPTION_NUM}-valid`,
+      'Valid'
+    );
 
     // Hide "Valid" label visually from all but first
-    if (i > 1) {
+    if (OPTION_NUM > 1) {
       validLabel.classList.add('visually-hidden');
     }
 
     labelRow.appendChild(optionLabel);
     labelRow.appendChild(validLabel);
 
-    const optionInput = createInput(`${totalQuestions}O${i}-description`);
-    const validInput = createInput(`${totalQuestions}O${i}-valid`, 'checkbox');
+    const optionInput = createInput(
+      `${AMT_OF_TOTAL_QUESTIONS}O${OPTION_NUM}-description`
+    );
+    const validInput = createInput(
+      `${AMT_OF_TOTAL_QUESTIONS}O${OPTION_NUM}-valid`,
+      'checkbox'
+    );
     inputRow.appendChild(optionInput);
     inputRow.appendChild(validInput);
 
