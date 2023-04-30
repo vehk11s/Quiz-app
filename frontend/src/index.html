@@ -33,12 +33,14 @@
 
         <!-- todo: get these values from database and CSS -->
         <div class="options">
-          <fieldset>
+          <fieldset id="chooseCategory">
             <legend>Choose Category</legend>
             <label for="cpp">C/C++</label>
             <input type="radio" id="cpp" name="category" value="64490691a4962904fd5876fc" checked>
             <label for="javascript">JavaScript</label>
             <input type="radio" id="javascript" name="category" value="6446b1b0839b2adb69b0ecb0">
+
+
           </fieldset>
         </div>
         <!-- todo CSS -->
@@ -54,13 +56,14 @@
           </fieldset>
         </div>
       <div class="buttons">
-        <button class="btn btn-secondary">I'm a secondary button</button>
+        <button class="btn btn-secondary" >I'm a secondary button</button>
         <button class="btn btn-primary" id="btnStartGame">Start game</button>
       </div>
     </main>
     <footer>
       <p>Footer</p>
     </footer>
+    <!-- <script src="api/categoryApi.js"></script> -->
     <script type="module" src="js/game.js"></script>
   </body>
 </html>
