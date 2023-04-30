@@ -10,11 +10,31 @@
     <link rel="stylesheet" href="./styles/admin.css" />
 
     <style>
-      li li {
-        list-style: none;
-      }
       li li svg {
         margin-right: 0.25rem;
+      }
+
+      .btn-sm {
+        font-size: 0.9rem;
+        padding: 4px 16px;
+      }
+
+      .list__question {
+        position: static !important;
+        padding: 1rem;
+      }
+
+      .list__footer {
+        padding-top: .5rem;
+      }
+
+      .list__question .btn-icon {
+        position: static !important;
+      }
+
+
+      .list__question:not(:last-child) {
+        border-bottom: 2px solid var(--primary-pink-light);
       }
     </style>
   </head>
@@ -26,8 +46,7 @@
     </div>
 
     <section>
-      <h1>Admin</h1>
-      <!--       <form id="question_form" action="">
+      <!--             <form id="question_form" action="">
         <p class="xl">Add questions</p>
 
         <fieldset class="categories">
@@ -66,6 +85,7 @@
         </div>
       </form> -->
     </section>
+    <!-- <script src="module" src="./js/questionForm.js"></script> -->
     <script type="module" src="./js/admin.js"></script>
   </body>
 </html>

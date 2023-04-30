@@ -1,4 +1,4 @@
-import { getQuestions } from '../api/questionApi.js';
+import { getQuestions, deleteQuestion } from '../api/questionApi.js';
 import { getCategories } from '../api/categoryApi.js';
 
 let categoryBtn = document.querySelector('#category-btn');
@@ -65,7 +65,7 @@ async function handleCategoryNav(location) {
     const categories = await getCategories();
     categories.forEach((category) => {
       const btn = document.createElement('button');
-      btn.classList.add('btn', 'btn-secondary');
+      btn.classList.add('btn', 'btn-secondary', 'btn-sm');
 
       btn.id = category.id;
       btn.textContent = category.category;
@@ -93,40 +93,70 @@ function setListeners() {
 
 function createContent(elements) {
   const section = document.querySelector('section');
-  section.innerHTML = '';
+  section.innerHTML = ''; // Remove content
 
-  const list = document.createElement('ol');
+  const list = document.createElement('ol'); // Main listing
 
   elements.forEach((element) => {
-    const listItem = document.createElement('li');
-    listItem.textContent = element.question;
+    const questionItem = document.createElement('li');
+    questionItem.textContent = element.question;
+    questionItem.classList.add('list__question');
 
-    const optionsList = document.createElement('ul');
+    const optionsList = document.createElement('ol');
 
     element.options.forEach((option) => {
-      const optionEl = document.createElement('li');
-
-      const correctSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-square" viewBox="0 0 16 16">
-      <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
-      <path d="M10.97 4.97a.75.75 0 0 1 1.071 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.235.235 0 0 1 .02-.022z"/>
-    </svg>`;
-      const incorrectSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square" viewBox="0 0 16 16">
-    <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
-    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-  </svg>`;
+      const optionItem = document.createElement('li');
 
       if (option.isCorrect) {
-        optionEl.innerHTML = correctSvg + `${option.option}`;
+        optionItem.textContent = `${option.option}`;
       } else {
-        optionEl.innerHTML = incorrectSvg + `${option.option}`;
+        optionItem.textContent = `${option.option}`;
       }
 
-      optionsList.appendChild(optionEl);
+      optionsList.appendChild(optionItem);
     });
 
-    listItem.appendChild(optionsList);
-    list.appendChild(listItem);
+    questionItem.appendChild(optionsList);
 
+    const listFooter = document.createElement('div');
+    listFooter.classList.add('row', 'list__footer');
+
+    const delBtn = createBtn('delete', element.id);
+    delBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      deleteQuestion(e.target.value)
+      e.preventDefault();
+    })
+    const editBtn = createBtn('edit', element.id);
+    listFooter.appendChild(editBtn);
+    listFooter.appendChild(delBtn);
+
+    questionItem.appendChild(listFooter);
+    list.appendChild(questionItem);
     section.appendChild(list);
   });
+}
+
+
+
+
+function createBtn(type, id) {
+  const button = document.createElement('button');
+  button.classList.add('btn', 'btn-secondary', 'btn-sm');
+
+  switch (type) {
+    case 'delete':
+      button.textContent = `Delete`;
+      button.value = id;
+      break;
+    case 'edit':
+      button.textContent = `Edit`;
+      button.value = id;
+      break;
+    default:
+      button.textContent = 'Button';
+      break;
+  }
+
+  return button;
 }

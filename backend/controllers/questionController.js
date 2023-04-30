@@ -77,7 +77,7 @@ exports.delete_question = function (req, res) {
     if (result === null) {
       res.status(418).send('Question not found');
     } else {
-      res.status(200).send(result.json());
+      res.status(200).send(result);
     }
   });
 };

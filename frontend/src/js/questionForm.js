@@ -91,7 +91,12 @@ function addQuestion() {
   const questionSet = createFieldset();
   questionSet.classList.add('form__question');
   questionSet.setAttribute('id', `Q${totalQuestions}-group`);
-  questionSet.appendChild(createRemoveBtn());
+  const btn = createRemoveBtn();
+  btn.addEventListener('click', (e) => {
+    handleRemove(e);
+  });
+
+  questionSet.appendChild(btn);
 
   const questionLegend = createLegend(`${visibleQuestions}. Question`);
   questionSet.appendChild(questionLegend);
@@ -169,9 +174,6 @@ export function createRemoveBtn() {
   button.classList.add('btn', 'btn-icon');
   button.setAttribute('id', 'remove-question');
   button.innerHTML = svg;
-  button.addEventListener('click', (e) => {
-    handleRemove(e);
-  });
 
   return button;
 }
