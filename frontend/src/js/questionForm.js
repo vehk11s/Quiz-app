@@ -40,31 +40,37 @@ function handleRemove(e) {
 }
 
 function handleSubmit(e) {
-  e.preventDefault();
+  // Define new array for the questions
+  const newQuestions = [];
 
-  const category = document.querySelector('input[name="category"]:checked').id;
-  const questions = document.querySelectorAll('.form__question');
-  const options = [];
-  let formValues;
-  let formData = [];
+  const category = document.querySelector('input[name="category"]:checked').id; // Get selected category id
+  const questionSets = document.querySelectorAll('.form__question'); // Select each question set by class name
 
-  questions.forEach((question) => {
-    formValues = question.querySelectorAll('input');
+  questionSets.forEach((questionSet) => {
+    const i = questionSet.id.slice(1, 2); // Get question number
+    const questionOptions = [];
 
-    for (let i = 1; i <= 4; i++) {
-      const input = document.querySelectorAll(`[id^='O${i}']`);
+    const questionInput = document.querySelector(`#Q${i}`);
 
-      options.push({
-        option: input[0].value,
-        isCorrect: input[1].checked,
+    // Select all corresponding options sets inside parent
+    for (let j = 1; j <= 4; j++) {
+      const optionSets = questionSet.querySelectorAll(`[id^='${i}O${j}']`);
+      questionOptions.push({
+        option: optionSets[0].value,
+        isCorrect: optionSets[1].checked,
       });
     }
 
-    formData.push({ question: formValues[0].value, options, category });
+    const newQuestion = {
+      question: questionInput.value,
+      options: questionOptions,
+      category: category,
+    };
+
+    newQuestions.push(newQuestion);
   });
 
-  postQuestion(formData);
-  e.preventDefault();
+  postQuestion(newQuestions);
 }
 
 function updateIndexing() {
@@ -115,8 +121,11 @@ function createOptions() {
     const labelRow = createRow();
     const inputRow = createRow();
 
-    const optionLabel = createLabel(`O${i}-description`, `${i}. Option`);
-    const validLabel = createLabel(`O${i}-valid`, 'Valid');
+    const optionLabel = createLabel(
+      `${totalQuestions}O${i}-description`,
+      `${i}. Option`
+    );
+    const validLabel = createLabel(`${totalQuestions}O${i}-valid`, 'Valid');
 
     // Hide "Valid" label visually from all but first
     if (i > 1) {
@@ -126,8 +135,8 @@ function createOptions() {
     labelRow.appendChild(optionLabel);
     labelRow.appendChild(validLabel);
 
-    const optionInput = createInput(`O${i}-description`);
-    const validInput = createInput(`O${i}-valid`, 'checkbox');
+    const optionInput = createInput(`${totalQuestions}O${i}-description`);
+    const validInput = createInput(`${totalQuestions}O${i}-valid`, 'checkbox');
     inputRow.appendChild(optionInput);
     inputRow.appendChild(validInput);
 
