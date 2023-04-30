@@ -1,11 +1,11 @@
-const url = 'http://localhost:3000/questions';
+const url = 'http://localhost:3000/questions?';
 
-/* export const fetchQuestions = async () => {
-  const questions = await fetch(url + '?c=6447f81e6f1b5ca81f7a5506', {
+export const getQuestions = async (query) => {
+  const questions = await fetch(url + new URLSearchParams(query), {
     method: 'GET',
   });
-  return questions;
-}; */
+  return questions.json();
+};
 
 export async function postQuestion(data) {
   const response = await fetch(url, {

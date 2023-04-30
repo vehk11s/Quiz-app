@@ -4,7 +4,7 @@ const Question = require('../models/questionModel');
 // GET 10 questions of given category
 // TODO: Set question limit to 10 after database is ready
 exports.get_questions = async function (req, res) {
-  let categoryId = new mongoose.Types.ObjectId(req.query.c);
+  let categoryId = new mongoose.Types.ObjectId(req.query.category);
 
   Question.find({ category: categoryId })
     .populate('category')
