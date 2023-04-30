@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz App - Admin</title>
+
+    <link rel="stylesheet" href="./styles/style.css" />
+    <link rel="stylesheet" href="./styles/admin.css" />
+  </head>
+
+  <body>
+    <form id="question_form" action="">
+      <p class="xl">Add questions</p>
+
+      <fieldset class="categories">
+        <legend class="lg">Select category</legend>
+        <label class="row">
+          <input
+            type="radio"
+            name="category"
+            id="6446b1b0839b2adb69b0ecb0"
+          />JavaScript</label
+        >
+
+        <label class="row">
+          <input
+            type="radio"
+            name="category"
+            id="6447f81e6f1b5ca81f7a5506"
+          />Accessibility</label
+        >
+        <label class="row"
+          ><input
+            type="radio"
+            name="category"
+            id="64490691a4962904fd5876fc"
+          />C/C++</label
+        >
+      </fieldset>
+
+      <div class="form__content"></div>
+
+      <div class="form__footer">
+        <button id="add-question" class="btn btn-primary">Add Question</button>
+        <button id="submit-form" class="btn btn-primary">Save all</button>
+      </div>
+    </form>
+
+    <script type="module" src="js/questionForm.js"></script>
+  </body>
+</html>

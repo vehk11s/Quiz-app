@@ -41,25 +41,14 @@ exports.get_question = function (req, res) {
 
 // POST new question
 // TODO: Validation
-exports.add_question = function (req, res) {
-  let { question, type, options, explanation, hint, category } = req.body;
+exports.add_question = async function (req, res) {
+  category = new mongoose.Types.ObjectId(req.body.category);
 
-  category = new mongoose.Types.ObjectId(category);
+  // Prevents additional documents from being inserted if one fails
+  const insertOptions = { ordered: true };
 
-  const newQuestion = new Question({
-    question,
-    type,
-    options,
-    explanation,
-    hint,
-    category,
-  });
-
-  newQuestion
-    .save()
-    .then((saved) => {
-      res.json(saved);
-    })
+  await Question.insertMany(req.body, insertOptions)
+    .then((saved) => res.json(saved))
     .catch((error) => res.send(error));
 };
 
