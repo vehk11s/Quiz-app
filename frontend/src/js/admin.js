@@ -1,14 +1,12 @@
-import {
-  getQuestions,
-  deleteQuestion,
-  getQuestion,
-} from '../api/questionApi.js';
+import { getQuestions, deleteQuestion } from '../api/questionApi.js';
 import { getCategories } from '../api/categoryApi.js';
 import { drawForm } from './questionForm.js';
 
 let categoryBtn = document.querySelector('#category-btn');
 let questionBtn = document.querySelector('#question-btn');
 
+// Prevents throwing user back to main page on load
+// Doesn't yet retain category-based question listing
 window.addEventListener('load', () => {
   const location = window.location.hash.substring(1);
   init(location);
@@ -27,21 +25,14 @@ questionBtn.addEventListener('click', () => {
 function init(location) {
   const section = document.querySelector('section');
   section.innerHTML = '';
-  const title = document.createElement('h1');
 
+  const title = document.createElement('h1');
   const text = document.createElement('p');
 
   switch (location) {
     case 'questions':
       title.textContent = 'Questions';
       text.textContent = 'Select a category to view questions';
-      const button = document.createElement('button');
-      button.classList.add('btn', 'btn-primary');
-      button.textContent = 'Add questions';
-      button.addEventListener('click', () => {
-        drawForm();
-      });
-      section.appendChild(button);
 
       break;
     case 'categories':
@@ -56,6 +47,16 @@ function init(location) {
 
   section.appendChild(title);
   section.appendChild(text);
+
+  if (location === 'questions') {
+    const button = document.createElement('button');
+    button.classList.add('btn', 'btn-primary');
+    button.textContent = 'Add new questions';
+    button.addEventListener('click', () => {
+      drawForm();
+    });
+    section.appendChild(button);
+  }
 
   handleCategoryNav(location);
 }

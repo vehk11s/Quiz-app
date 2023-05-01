@@ -25,8 +25,6 @@ export const postQuestion = async (data) => {
 };
 
 export const updateQuestion = async (data, id) => {
-  console.log(data);
-
   const response = await fetch(url + id, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
