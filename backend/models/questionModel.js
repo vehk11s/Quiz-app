@@ -22,7 +22,7 @@ const questionSchema = new Schema({
   options: [optionsSchema],
   explanation: { type: String, default: '' },
   hint: { type: String, default: '' },
-  category: { type: Schema.Types.ObjectId, ref: 'Category' },
+  category: { type: Schema.Types.ObjectId, ref: 'Category', required: true  },
 });
 
 questionSchema.set('toJSON', {

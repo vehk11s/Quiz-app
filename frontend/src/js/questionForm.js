@@ -1,102 +1,131 @@
-import { postQuestion } from '../api/questionApi.js';
 import {
+  getQuestion,
+  postQuestion,
+  updateQuestion,
+} from '../api/questionApi.js';
+import { getCategories } from '../api/categoryApi.js';
+import {
+  createForm,
   createFieldset,
   createLegend,
   createLabel,
   createInput,
+  createBtn,
+  createDiv,
 } from './formHelpers.js';
-
-const addBtn = document.querySelector('#add-question');
-const submitBtn = document.querySelector('#submit-form');
 
 let visibleQuestions = 1; // Tracks the visible question sets on display, used for dynamical indexing
 let totalQuestions = 1; // Doesn't decrease when removing a question, used for element ids
 const AMT_OF_OPTIONS = 4; // Default amount of options for multichoice questions, used for loops
 
-// Create first question form element on load
-document.addEventListener('DOMContentLoaded', () => {
-  addQuestion();
-  updateIndexing();
-});
+/* 
+drawForm handles the overall constructing and drawing the form inside the dialog element.
+*/
+export async function drawForm(id) {
+  // Find dialog and clear the content
+  const modal = document.querySelector('dialog');
+  const modalContent = modal.querySelector('.modal__content');
+  modalContent.innerHTML = '';
 
-addBtn.addEventListener('click', (e) => {
-  totalQuestions += 1;
-  visibleQuestions += 1;
-  addQuestion();
-  updateIndexing();
-  e.preventDefault();
-});
+  let formTitle = 'Add question';
+  let question;
 
-submitBtn.addEventListener('click', (e) => {
-  handleSubmit(e);
-});
+  // Editing form
+  if (id) {
+    formTitle = 'Edit question';
+    question = await getQuestion(id);
+  }
 
-function handleRemove(e) {
-  const form = document.querySelector('.form__content');
-  const parentSet = e.target.closest('fieldset');
+  const form = createForm('question_form', formTitle);
 
-  form.removeChild(parentSet);
-  updateIndexing();
-  visibleQuestions -= 1;
-}
+  const categories = createFieldset();
+  categories.classList.add('categories');
 
-function handleSubmit(e) {
-  // Define new array for the questions
-  const newQuestions = [];
+  const data = await getCategories();
 
-  const category = document.querySelector('input[name="category"]:checked').id; // Get selected category id
-  const questionSets = document.querySelectorAll('.form__question'); // Select each question set by class name
+  data.forEach((category) => {
+    const { category: name, id } = category;
 
-  questionSets.forEach((questionSet) => {
-    const questionNum = questionSet.id.slice(1, 2); // Get question number
-    const questionOptions = [];
+    const label = createLabel(name);
+    label.classList.add('row');
+    const input = createInput(name, 'radio', 'category');
+    input.value = id;
 
-    const questionInput = document.querySelector(`#Q${questionNum}`);
-
-    // Select all corresponding options sets inside parent
-    for (let optionNum = 1; optionNum <= AMT_OF_OPTIONS; optionNum++) {
-      const optionSets = questionSet.querySelectorAll(
-        `[id^='${questionNum}O${optionNum}']`
-      );
-      questionOptions.push({
-        option: optionSets[0].value,
-        isCorrect: optionSets[1].checked,
-      });
+    // Editing form
+    if (question && question.category.id === id) {
+      input.checked = true;
     }
 
-    const newQuestion = {
-      question: questionInput.value,
-      options: questionOptions,
-      category: category,
-    };
+    label.appendChild(input);
+    label.insertAdjacentText('beforeend', name);
 
-    newQuestions.push(newQuestion);
+    categories.appendChild(label);
   });
 
-  postQuestion(newQuestions);
-}
+  form.appendChild(categories);
 
-function updateIndexing() {
-  const legends = document.querySelectorAll('.form__question > legend');
+  const formContent = createDiv('form__content');
+  const formFooter = createDiv('form__footer');
+  form.appendChild(formContent);
+  form.appendChild(formFooter);
 
-  legends.forEach((legend, questionIndex) => {
-    legend.textContent = '';
-    legend.textContent = `${questionIndex + 1}. Question`;
+  // New question form
+  if (!id) {
+    const addBtn = createBtn('Add question');
+    addBtn.classList.add('btn-primary');
+
+    addBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      console.log('New question added');
+      totalQuestions += 1;
+      visibleQuestions += 1;
+      drawQuestion();
+      updateIndexing();
+      e.preventDefault();
+    });
+
+    formFooter.appendChild(addBtn);
+  }
+
+  const submitBtn = createBtn('Save');
+  submitBtn.classList.add('btn-primary');
+
+  submitBtn.addEventListener('click', () => {
+    handleSubmit(id);
+  });
+
+  formFooter.appendChild(submitBtn);
+  form.appendChild(formFooter);
+
+  // Append the full form and then open dialog
+  modalContent.appendChild(form);
+  modal.showModal();
+
+  drawQuestion(question);
+  updateIndexing();
+
+  const closeBtn = document.querySelector('#close-modal');
+  closeBtn.addEventListener('click', () => {
+    modalContent.innerHTML = '';
+    modal.close();
   });
 }
 
-function addQuestion() {
+function drawQuestion(question) {
   const form = document.querySelector('.form__content');
 
   const questionSet = createFieldset();
   questionSet.classList.add('form__question');
-  questionSet.setAttribute('id', `Q${totalQuestions}-group`);
-  const btn = createRemoveBtn();
-  btn.addEventListener('click', (e) => {
-    handleRemove(e);
-  });
+  questionSet.id = `Q${totalQuestions}-group`;
 
-  questionSet.appendChild(btn);
+  // Prevent removing all question sets from the form
+  if (visibleQuestions > 1) {
+    const btn = createRemoveBtn();
+    btn.addEventListener('click', (e) => {
+      handleRemove(e);
+    });
+    questionSet.appendChild(btn);
+  }
 
   const questionLegend = createLegend(`${visibleQuestions}. Question`);
   questionSet.appendChild(questionLegend);
@@ -104,15 +133,20 @@ function addQuestion() {
   const questionLabel = createLabel(`Q${totalQuestions}`, 'Question');
   const questionInput = createInput(`Q${totalQuestions}`);
 
+  // Set default value for editing form
+  if (question) {
+    questionInput.value = question.question;
+  }
+
   questionLabel.appendChild(questionInput);
 
   questionSet.appendChild(questionLabel);
-  questionSet.appendChild(createOptions());
+  questionSet.appendChild(drawOptions(question));
 
   form.appendChild(questionSet);
 }
 
-function createOptions() {
+function drawOptions(question) {
   // Create fieldset & legend for the options
   const optionSet = createFieldset();
   optionSet.classList.add('form__options');
@@ -126,8 +160,12 @@ function createOptions() {
     group.classList.add('form__group');
 
     // Create grouping elements for labels and inputs
-    const labelRow = createRow();
-    const inputRow = createRow();
+    const labelRow = createDiv('form__row');
+    const inputRow = createDiv('form__row');
+
+    if (question) {
+      inputRow.id = question.options[optionNum - 1]._id;
+    }
 
     const optionLabel = createLabel(
       `${totalQuestions}O${optionNum}-description`,
@@ -149,10 +187,19 @@ function createOptions() {
     const optionInput = createInput(
       `${totalQuestions}O${optionNum}-description`
     );
+
     const validInput = createInput(
       `${totalQuestions}O${optionNum}-valid`,
-      'checkbox'
+      'radio',
+      'correctOptions'
     );
+
+    // Set default values for editing form
+    if (question) {
+      optionInput.value = question.options[optionNum - 1].option;
+      validInput.checked = question.options[optionNum - 1].isCorrect;
+    }
+
     inputRow.appendChild(optionInput);
     inputRow.appendChild(validInput);
 
@@ -163,6 +210,95 @@ function createOptions() {
   }
 
   return optionSet;
+}
+
+function updateIndexing() {
+  const legends = document.querySelectorAll('.form__question > legend');
+
+  legends.forEach((legend, questionIndex) => {
+    legend.textContent = '';
+    legend.textContent = `${questionIndex + 1}. Question`;
+  });
+}
+
+function handleRemove(e) {
+  const form = document.querySelector('.form__content');
+  const parentSet = e.target.closest('fieldset');
+
+  form.removeChild(parentSet);
+  updateIndexing();
+  visibleQuestions -= 1;
+}
+
+function handleSubmit(id) {
+  // Define new array for the questions
+  const newQuestions = [];
+
+  // Get selected category id
+  const category = document.querySelector(
+    'input[name="category"]:checked'
+  ).value;
+  // Select each question set by class name
+  const questionSets = document.querySelectorAll('.form__question');
+
+  if (!id) {
+    questionSets.forEach((questionSet) => {
+      // Get question number
+      const questionNum = questionSet.id.slice(1, 2);
+      const questionOptions = [];
+
+      const questionInput = document.querySelector(
+        `[id^='${questionNum}O${optionNum}']`
+      );
+
+      // Select all corresponding options sets inside parent
+      for (let optionNum = 1; optionNum <= AMT_OF_OPTIONS; optionNum++) {
+        const optionSets = questionSet.querySelectorAll(
+          `[id^='${questionNum}O${optionNum}']`
+        );
+        questionOptions.push({
+          option: optionSets[0].value,
+          isCorrect: optionSets[1].checked,
+        });
+      }
+
+      const newQuestion = {
+        question: questionInput.value,
+        options: questionOptions,
+        category: category,
+      };
+
+      newQuestions.push(newQuestion);
+    });
+
+    postQuestion(newQuestions);
+  } else {
+    const questionField = document.querySelector('#Q1');
+    const options = [];
+
+    for (let optionNum = 1; optionNum <= AMT_OF_OPTIONS; optionNum++) {
+      const optionSets = document.querySelectorAll(`[id^='1O${optionNum}']`);
+
+      const optionId = optionSets[0].parentElement.id;
+
+      const option = {
+        option: optionSets[0].value,
+        isCorrect: optionSets[1].checked,
+        _id: optionId,
+      };
+
+      options.push(option);
+    }
+
+    const updatedQuestion = {
+      id: id,
+      question: questionField.value,
+      options: options,
+      category: category,
+    };
+
+    updateQuestion(updatedQuestion, id);
+  }
 }
 
 export function createRemoveBtn() {
@@ -176,11 +312,4 @@ export function createRemoveBtn() {
   button.innerHTML = svg;
 
   return button;
-}
-
-function createRow() {
-  const row = document.createElement('div');
-  row.classList.add('form__row');
-
-  return row;
 }

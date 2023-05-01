@@ -25,16 +25,30 @@
       }
 
       .list__footer {
-        padding-top: .5rem;
+        padding-top: 0.5rem;
       }
 
       .list__question .btn-icon {
         position: static !important;
       }
 
-
       .list__question:not(:last-child) {
         border-bottom: 2px solid var(--primary-pink-light);
+      }
+
+      dialog {
+        color: var(--primary-white);
+        background-color: rgb(106, 24, 54);
+        border: none;
+        border-radius: 8px;
+        padding: 2rem;
+        max-height: 90%;
+        overflow-y: auto;
+        margin: auto;
+      }
+
+      dialog::backdrop {
+        background-color: rgba(0, 0, 0, 0.3);
       }
     </style>
   </head>
@@ -45,47 +59,12 @@
       <button id="question-btn" class="btn btn-primary">Questions</button>
     </div>
 
-    <section>
-      <!--             <form id="question_form" action="">
-        <p class="xl">Add questions</p>
+    <section></section>
 
-        <fieldset class="categories">
-          <legend class="lg">Select category</legend>
-          <label class="row">
-            <input
-              type="radio"
-              name="category"
-              id="6446b1b0839b2adb69b0ecb0"
-            />JavaScript</label
-          >
-
-          <label class="row">
-            <input
-              type="radio"
-              name="category"
-              id="6447f81e6f1b5ca81f7a5506"
-            />Accessibility</label
-          >
-          <label class="row"
-            ><input
-              type="radio"
-              name="category"
-              id="64490691a4962904fd5876fc"
-            />C/C++</label
-          >
-        </fieldset>
-
-        <div class="form__content"></div>
-
-        <div class="form__footer">
-          <button id="add-question" class="btn btn-primary">
-            Add Question
-          </button>
-          <button id="submit-form" class="btn btn-primary">Save all</button>
-        </div>
-      </form> -->
-    </section>
-    <!-- <script src="module" src="./js/questionForm.js"></script> -->
+    <dialog class="modal" closed>
+      <button id="close-modal" class="btn btn-secondary">Close</button>
+      <div class="modal__content"></div>
+    </dialog>
     <script type="module" src="./js/admin.js"></script>
   </body>
 </html>

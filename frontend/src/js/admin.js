@@ -1,5 +1,10 @@
-import { getQuestions, deleteQuestion } from '../api/questionApi.js';
+import {
+  getQuestions,
+  deleteQuestion,
+  getQuestion,
+} from '../api/questionApi.js';
 import { getCategories } from '../api/categoryApi.js';
+import { drawForm } from './questionForm.js';
 
 let categoryBtn = document.querySelector('#category-btn');
 let questionBtn = document.querySelector('#question-btn');
@@ -30,6 +35,14 @@ function init(location) {
     case 'questions':
       title.textContent = 'Questions';
       text.textContent = 'Select a category to view questions';
+      const button = document.createElement('button');
+      button.classList.add('btn', 'btn-primary');
+      button.textContent = 'Add questions';
+      button.addEventListener('click', () => {
+        drawForm();
+      });
+      section.appendChild(button);
+
       break;
     case 'categories':
       title.textContent = 'Categories';
@@ -123,11 +136,14 @@ function createContent(elements) {
 
     const delBtn = createBtn('delete', element.id);
     delBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      deleteQuestion(e.target.value)
-      e.preventDefault();
-    })
+      deleteQuestion(e.target.value);
+    });
+
     const editBtn = createBtn('edit', element.id);
+    editBtn.addEventListener('click', (e) => {
+      drawForm(e.target.value);
+    });
+
     listFooter.appendChild(editBtn);
     listFooter.appendChild(delBtn);
 
@@ -137,20 +153,17 @@ function createContent(elements) {
   });
 }
 
-
-
-
 function createBtn(type, id) {
   const button = document.createElement('button');
   button.classList.add('btn', 'btn-secondary', 'btn-sm');
 
   switch (type) {
     case 'delete':
-      button.textContent = `Delete`;
+      button.textContent = 'Delete';
       button.value = id;
       break;
     case 'edit':
-      button.textContent = `Edit`;
+      button.textContent = 'Edit';
       button.value = id;
       break;
     default:
