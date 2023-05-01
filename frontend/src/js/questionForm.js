@@ -201,7 +201,7 @@ function drawOptions(question) {
     const validInput = createInput(
       `${totalQuestions}O${optionNum}-valid`,
       'radio',
-      'correctOptions'
+      `Q${totalQuestions}-correct`
     );
 
     // Set default values for editing form
