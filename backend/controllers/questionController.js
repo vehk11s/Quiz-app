@@ -1,14 +1,12 @@
 const mongoose = require('mongoose');
 const Question = require('../models/questionModel');
 
-// GET 10 questions of given category
-// TODO: Set question limit to 10 after database is ready
+// GET questions of given category
 exports.get_questions = async function (req, res) {
-  let categoryId = new mongoose.Types.ObjectId(req.query.c);
+  let categoryId = new mongoose.Types.ObjectId(req.query.category);
 
   Question.find({ category: categoryId })
     .populate('category')
-    .limit(10)
     .then((result) => {
       if (result.length < 5) {
         res.status(418).send('Too few questions');
@@ -52,16 +50,15 @@ exports.add_question = async function (req, res) {
     .catch((error) => res.send(error));
 };
 
-// EDIT
-// TODO: Update options by id
+// EDIT question by id
 exports.edit_question = function (req, res) {
   let questionId = new mongoose.Types.ObjectId(req.params.id);
-  let { question, type, explanation, hint, category } = req.body;
+  let { question, type, options, explanation, hint, category } = req.body;
 
   Question.findByIdAndUpdate(
     questionId,
     {
-      $set: { question, type, explanation, hint, category },
+      $set: { question, type, options, explanation, hint, category },
     },
     { new: true }
   ).then((updatedQuestion) => {
@@ -77,7 +74,7 @@ exports.delete_question = function (req, res) {
     if (result === null) {
       res.status(418).send('Question not found');
     } else {
-      res.status(200).send(result.json());
+      res.status(200).send(result);
     }
   });
 };

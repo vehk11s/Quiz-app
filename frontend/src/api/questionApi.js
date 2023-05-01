@@ -1,13 +1,20 @@
-const url = 'http://localhost:3000/questions';
+const url = 'http://localhost:3000/questions/';
 
-/* export const fetchQuestions = async () => {
-  const questions = await fetch(url + '?c=6447f81e6f1b5ca81f7a5506', {
+export const getQuestions = async (query) => {
+  const questions = await fetch(url + '?' + new URLSearchParams(query), {
     method: 'GET',
   });
-  return questions;
-}; */
+  return questions.json();
+};
 
-export async function postQuestion(data) {
+export const getQuestion = async (id) => {
+  const question = await fetch(url + id, {
+    method: 'GET',
+  });
+  return question.json();
+};
+
+export const postQuestion = async (data) => {
   const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -15,4 +22,23 @@ export async function postQuestion(data) {
   });
 
   return response.json();
-}
+};
+
+export const updateQuestion = async (data, id) => {
+  const response = await fetch(url + id, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  return response.json();
+};
+
+export const deleteQuestion = async (id) => {
+  const response = await fetch(url + id, {
+    method: 'DELETE',
+  });
+
+  console.log(id + ' deleted');
+  return response.json();
+};
