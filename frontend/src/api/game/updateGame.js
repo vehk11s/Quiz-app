@@ -1,11 +1,14 @@
 const SERVER = "http://127.0.0.1:3000";
 
+const  QUESTION_LIMIT = 10;
 
 /*
   Updates game data based on gameId that is stored in localStorage.
-  At each step increases questionsAnswered variable by one.
+  Parameters: score (How much is increased)
+              incQuestionsAnswered (true/false, do we increase questionsAnswered variable by 1)
+              name (do we update name)
 */
-export async function updateGame(score, name = "Anonymous") {
+export async function updateGame(score, incQuestionsAnswered = false, name = "Anonymous") {
 
   //todo add validation
   const id = localStorage.getItem("gameId");
@@ -13,12 +16,27 @@ export async function updateGame(score, name = "Anonymous") {
   //get current gameData from database
   let gameData = await getGameDataById(id);
 
+  if ( gameData[0].questionsAnswered >= QUESTION_LIMIT - 1 ){
+    console.log("Answered to all questions!: " + parseInt(gameData[0].questionsAnswered + 1))
+    return 0;
+  }
+
+  let data;
+
   //Create updated data to be stored in database
-  let data = {
-    "player": name,
-    "score": parseInt(score),
-    "answeredQuestions": parseInt(gameData[0].questionsAnswered + 1)
-  };
+  if ( incQuestionsAnswered ){
+    data = {
+      "player": name,
+      "score": parseInt(gameData[0].score + score),
+      "questionsAnswered": parseInt(gameData[0].questionsAnswered + 1)
+    };
+  }
+  else{
+    data = {
+      "player": name,
+      "score": parseInt(score),
+    };
+  }
 
   const settings = {
     method: "PATCH",
@@ -46,7 +64,7 @@ export async function updateGame(score, name = "Anonymous") {
 /*
   Gets game data by id from backend and returns it in json format.
 */
-async function getGameDataById(id){
+export async function getGameDataById(id){
   
   const settings = {
     method: "GET",
@@ -57,14 +75,14 @@ async function getGameDataById(id){
     let response = await fetch(SERVER + "/games/"+ id, settings);
 
     if ( !response ) {
-      console.log("Cannot update the game: ", response);
+      console.log("Cannot get game data: ", response);
       return 0;
     }
 
     return await response.json();
   }
   catch ( error ) {
-    console.log("ERROR: Cannot update the game: ", error);
+    console.log("ERROR: Cannot get game data: ", error);
     return 0;
   }
 };

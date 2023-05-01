@@ -23,7 +23,7 @@ const getRandomQuestions = (param, n) => {
   let questionIdArray = [];
 
   //store all the question ids to array
-  for (question of param) {
+  for (let question of param) {
     questionIdArray.push(question.id);
   }
 
@@ -147,13 +147,12 @@ exports.add_game = async function (req, res) {
     const allQuestions = await Question.find({ category: updateData.category }, options);
     const newGame = new Game(updateData);
 
-
     //get 10 random questions from selected category
     let questions = getRandomQuestions(allQuestions, 10);
 
     //store selected 10 questions to newGame
-    for (question of questions) {
-      newGame.questions.push(question.id);
+    for ( let index = 0; index < questions.length; index++ ){
+      newGame.questions.push(questions[index]);
     }
 
     const saved = await newGame.save();
