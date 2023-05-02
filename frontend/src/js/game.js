@@ -81,13 +81,11 @@ async function gameStateMachine() {
       const btnStartGame = document.getElementById("btnStartGame");
 
       btnStartGame.addEventListener("mouseup", (e) => { 
-        console.log('set state: startgame');
         localStorage.setItem("gameState", gameState.STARTGAME);
         handleStartButtonPress(e);
         
       });
       btnStartGame.addEventListener("keypress", (e) => {
-        console.log('set state: startgame');
         localStorage.setItem("gameState", gameState.STARTGAME);
         handleStartButtonPress(e)
       });
