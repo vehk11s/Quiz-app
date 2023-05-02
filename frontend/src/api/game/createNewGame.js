@@ -20,19 +20,19 @@ export async function createNewGame(category, difficulty) {
 
 
   try {
-    let response = await fetch(SERVER + "/games", settings);
+    let response = await fetch(`${SERVER}/games`, settings);
 
     if (!response) {
       console.log("Cannot create new game: ", response);
       return 0;
     }
 
-    let responseInJson = await response.json();
+    const responseInJson = await response.json();
 
     //save game id to localStorage for later use
-    localStorage.setItem("gameId", responseInJson);
+    localStorage.setItem("gameId", responseInJson.id);
 
-    return 1;
+    return responseInJson;
   }
   catch (error) {
     console.log("ERROR: cannot create new game: ", error);

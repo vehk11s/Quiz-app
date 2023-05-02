@@ -16,7 +16,13 @@ Basic rules:
 
 The app is two part program: backend and frontend.
 
-Backend is made with node.js and mongodb using following depencies: Express, Nodemon, Mongoose, Dotenv and CORS.
+Backend is made with node.js and mongodb using following depencies: 
+                                                                    Express;
+                                                                    Nodemon; 
+                                                                    Mongoose;
+                                                                    Dotenv;
+                                                                    express-validator;
+                                                                    CORS
 
 Frontend is made with html5, CSS3 and vanilla javascript. Accessibility of the frontend is one of the highest goals of this project.
 

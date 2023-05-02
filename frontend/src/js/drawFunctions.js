@@ -95,7 +95,7 @@ export async function drawIndexPage() {
   Draws the starting phase of the game where player can select category, difficulty etc.
 */
 
-export async function drawQuestionPhase(){
+export async function drawQuestionPhase( gameData ){
   //Parent area
   const screenDiv = document.getElementById('screen');
 
@@ -109,8 +109,8 @@ export async function drawQuestionPhase(){
 
   screenDiv.appendChild(title);
 
-  //Get question
-  let question = await getNextQuestion(localStorage.getItem('gameId'));
+  //Get next question
+  let question = await getNextQuestion(gameData);
 
   //draw title question as a title?
   const questionP = document.createElement('p');
@@ -131,12 +131,20 @@ export async function drawQuestionPhase(){
     const optionButton = document.createElement('button');
     optionButton.classList.add('btn');
     optionButton.classList.add('btn-option');
-    optionButton.innerText = (index + 1) + '. ' + question.options[index].option;
+    optionButton.innerText = `${index + 1}. ${question.options[index].option}`;
     optionButton.value = index;
 
     optionsDiv.appendChild(optionButton);
   }
 };
+
+
+
+
+
+
+
+
 
 export async function drawEndingPhase(){
   //parent id: screen

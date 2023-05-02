@@ -1,7 +1,5 @@
 import { createNewGame } from '../api/game/createNewGame.js';
-import { getNextQuestion } from '../api/game/getNextQuestion.js'
-import updateGame from '../api/game/updateGame.js';
-
+import { getGameDataById, updateGame } from '../api/game/updateGame.js';
 
 import { drawIndexPage, drawQuestionPhase, drawEndingPhase } from './drawFunctions.js';
 
@@ -25,9 +23,17 @@ const gameState = {
 };
 
 
-window.addEventListener("load", (event) => {
-  console.log("page is fully loaded");
-  gameStateMachine();
+//question limit of each game
+const QUESTION_LIMIT = 10;
+
+
+//after the page is loaded reset localStorage and start new game
+window.addEventListener("load", async (event) => {
+    //Reset localStorage at reload
+    await resetGame();
+
+    console.log("Quiz app is fully loaded");
+    gameStateMachine();
 });
 
 
@@ -55,11 +61,13 @@ async function startNewGame() {
   return await createNewGame(checkedCategory, difficulty);
 }
 
+
+
 /*
   Keeps hold of current gameState.
   gameState is stored in localStorage.
 */
-async function gameStateMachine() {
+async function gameStateMachine(gameData = null) {
 
   //load current gameState from localStorage
   let state = parseInt(localStorage.getItem("gameState"));
@@ -72,7 +80,7 @@ async function gameStateMachine() {
 
 
   //Check gameState and act accordingly.
-  //Todo: Question phase, ending phase, proper error handling?
+  //Todo: Proper error handling?
   switch (state) {
     case gameState.INDEX:
       
@@ -95,23 +103,26 @@ async function gameStateMachine() {
     case gameState.STARTGAME:
       //start new game phase
       console.log("Starting new game");
-      if (await startNewGame()) {
+
+      //Put gameData in array
+      gameData = [await startNewGame()];
+
+      if ( gameData ) {
         localStorage.setItem("gameState", gameState.QUESTIONS);
       }
       else {
-        console.log("go to error? state: " + state);
+        console.log("Error while running startNewGame!");
         localStorage.setItem("gameState", gameState.ERROR);
       }
-
 
     case gameState.QUESTIONS:
       //questions phase
 
       //draw question screen
-      await drawQuestionPhase();
+      await drawQuestionPhase(gameData);
 
 
-      //Handle option buttons button from index.html
+      //Handle option buttons from index.html
       const optionButtons = document.getElementsByClassName("btn-option");
 
       for (let index = 0; index < optionButtons.length; index++) {
@@ -126,9 +137,6 @@ async function gameStateMachine() {
       //Show points etc ask for new game?
 
       await drawEndingPhase();
-
-      //start game for testing purposes
-      //await resetGame();
 
       const btnMainMenu = document.getElementById("btnMainMenu");
 
@@ -146,27 +154,41 @@ async function gameStateMachine() {
 }
 
 
-async function checkAnswer(id, gameId){
-  const question = await getNextQuestion(gameId);
+async function updateGameData(answerId, gameId){
+  
+  //Update gameData from backend
+  let gameData = await getGameDataById(gameId);
 
-  //temporary here. TODO move to backend
-  //todo calc score etc...
+  let score = 0;
 
-  //increase score by 300 and increase answeredQuestions by 1
-  let res = await updateGame(300,true);
+  if (answerId !== undefined){
+    //Todo check if answer is correct.
+    //If it is correct then calculate scores
+    score = 200;
+  }
 
-  if ( res === 0 ){
-    //if returns false then we have answered to all questions and time to move to ending phase
+  //Check if answered to 10 questions already. If yes then set gameState to ending 
+  if ( gameData[0].questionsAnswered >= QUESTION_LIMIT - 1 ){
+    console.log("Answered to all questions!: " + parseInt(gameData[0].questionsAnswered + 1))
+    
     localStorage.setItem("gameState", gameState.ENDING);
   }
-  else{
-    localStorage.setItem("gameState", gameState.QUESTIONS);
+  else
+  {
+    //Update gameData to backend
+    gameData = await updateGame(gameId, gameData, score, true);
+
+    if ( gameData === 0 ){
+      //if returns false then we have error occured
+      localStorage.setItem("gameState", gameState.ERROR);
+    }
+    else{
+      localStorage.setItem("gameState", gameState.QUESTIONS);
+    }
   }
 
-  gameStateMachine();
+  gameStateMachine(gameData);
 }
-
-
 
 
 
@@ -180,8 +202,8 @@ function handleOptionButtonPress(e){
   //Get the button that was pressed
   const button = e.target;
   if (e.key === 'Enter' || e.type === 'mouseup') {
-    //button.value is the index of the answer
-    checkAnswer(button.value, localStorage.getItem('gameId'));
+    //button.value is the id of the answer
+    updateGameData(button.value, localStorage.getItem('gameId'));
   }
 };
 
