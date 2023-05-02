@@ -1,6 +1,7 @@
 import { getQuestions, deleteQuestion } from '../api/questionApi.js';
 import { getCategories } from '../api/categoryApi.js';
 import { drawForm } from './questionForm.js';
+import { categoryForm } from './categoryForm.js';
 
 let categoryBtn = document.querySelector('#category-btn');
 let questionBtn = document.querySelector('#question-btn');
@@ -56,6 +57,19 @@ function init(location) {
       drawForm();
     });
     section.appendChild(button);
+  }
+
+  // Category
+  if (location === 'categories') {
+    const button = document.createElement('button');
+    button.classList.add('btn', 'btn-primary');
+    button.textContent = 'Add new category';
+    button.addEventListener('click', () => {
+      categoryForm();
+    });
+    section.appendChild(button);
+
+    listCategories();
   }
 
   handleCategoryNav(location);
@@ -173,4 +187,39 @@ function createBtn(type, id) {
   }
 
   return button;
+}
+
+async function listCategories() {
+  const section = document.querySelector('section');
+  const list = document.createElement('ol'); // Main listing
+
+  const categories = await getCategories();
+
+  categories.forEach(function(object){
+    const categoryItem = document.createElement('li');
+
+    categoryItem.textContent = object.category;
+    categoryItem.classList.add('list__categories');
+
+    const listFooter = document.createElement('div');
+    listFooter.classList.add('row', 'list__footer');
+
+    const delBtn = createBtn('delete', object.id);
+    delBtn.addEventListener('click', (e) => {
+      //
+    });
+
+    const editBtn = createBtn('edit', object.id);
+    editBtn.addEventListener('click', (e) => {
+      //
+    });
+
+    listFooter.appendChild(editBtn);
+    listFooter.appendChild(delBtn);
+
+    categoryItem.appendChild(listFooter);
+    list.appendChild(categoryItem);
+    section.appendChild(list);
+
+  });
 }

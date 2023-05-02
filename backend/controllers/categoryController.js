@@ -10,19 +10,19 @@ exports.get_categories = async function (req, res) {
 };
 
 // POST new category
-exports.add_category = function (req, res) {
+exports.add_category = async function (req, res) {
   const body = req.body;
-  console.log(req.body);
+  console.log(body);
 
   if (body.category === undefined) {
     return res.status(400).json({ error: 'Category name missing' });
   }
 
-  const category = new Category({
+/*   const category = new Category({
     category: body.category,
-  });
+  }); */
 
-  category.save().then((saved) => {
+  await Category.insert().then((saved) => {
     res.json(saved);
   });
 };
