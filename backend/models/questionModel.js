@@ -22,8 +22,16 @@ const questionSchema = new Schema({
   options: [optionsSchema],
   explanation: { type: String, default: '' },
   hint: { type: String, default: '' },
-  category: { type: Schema.Types.ObjectId, ref: 'Category' },
+  category: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
 });
+
+questionSchema.statics = {
+  isValidQuestion(id) {
+    return this.findById(id).then((result) => {
+      if (!result) throw new Error('Question not found');
+    });
+  },
+};
 
 questionSchema.set('toJSON', {
   transform: (document, returnedObject) => {
