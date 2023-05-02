@@ -14,15 +14,7 @@ exports.add_category = async function (req, res) {
   const body = req.body;
   console.log(body);
 
-  if (body.category === undefined) {
-    return res.status(400).json({ error: 'Category name missing' });
-  }
-
-/*   const category = new Category({
-    category: body.category,
-  }); */
-
-  await Category.insert().then((saved) => {
+  await Category.insertMany(body).then((saved) => {
     res.json(saved);
   });
 };
