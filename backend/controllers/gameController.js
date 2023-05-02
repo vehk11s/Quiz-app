@@ -9,7 +9,7 @@ const checkValidityOfId = (paramId) => {
   if ( !paramId )
     return false;
 
-  //Check if parameter gameId is in valid format
+  //Check if parameter paramId is in valid format
   if (!paramId.match(/^[0-9a-fA-F]{24}$/))
     return false;
 
@@ -37,7 +37,7 @@ const getRandomQuestions = (param, n) => {
 
 /* 
   Get all games
-*/
+
 exports.get_games = async function (req, res) {
   try{
     const results = await Game.find();
@@ -59,41 +59,41 @@ exports.get_games = async function (req, res) {
     res.status(400).send("Error while fetching games, error message: " + error);
   }
 };
-
+*/
 
 /* 
   Get game by id
 */
 exports.get_game = async function (req, res) {
 
-  const gameId = req.params.game_id;
+  const id = req.params.id;
 
   //Check the format of id
-  if ( !checkValidityOfId(gameId) ){
-    console.log("Error: gameId: " + gameId + " is not in valid format!");
-    res.status(400).send("Error: gameId: " + gameId + " is not in valid format!");
+  if ( !checkValidityOfId(id) ){
+    console.log("Error: id: " + id + " is not in valid format!");
+    res.status(400).send("Error: id: " + id + " is not in valid format!");
   }
 
-  console.log("Finding game: " + gameId);
+  console.log("Finding game: " + id);
   
   try{
-    const result = await Game.find( { _id: gameId } );
+    const result = await Game.find( { _id: id } );
 
     //Check if found any games
     if ( Object.keys(result).length !== 0 ){
-      console.log("Found game: " + gameId );
+      console.log("Found game: " + id );
       console.log("Sending game data to frontend...");
       res.status(200).json(result);
       console.log("Game data has been sent to frontend.");
     }
     else{
-      console.log("Game with id: " + gameId + " does not exist.");
-      res.status(404).send("Game with id: " + gameId + " does not exist.");
+      console.log("Game with id: " + id + " does not exist.");
+      res.status(404).send("Game with id: " + id + " does not exist.");
     }
   }
   catch( error ){
-    console.log("Error while fetching game: " + gameId + ", error message: " + error);
-    res.status(400).send("Error while fetching game: " + gameId + ", error message: " + error);
+    console.log("Error while fetching game: " + id + ", error message: " + error);
+    res.status(400).send("Error while fetching game: " + id + ", error message: " + error);
   }
 };
 
@@ -104,12 +104,12 @@ exports.get_game = async function (req, res) {
 */
 exports.get_games_by_category = async function (req, res) {
 
-  const categoryId = req.params.category_id;
+  const categoryId = req.query.category;
 
   //Check the format of id
   if ( !checkValidityOfId(categoryId) ){
-    console.log("Error: gameId: " + categoryId + " is not in valid format!");
-    res.status(400).send("Error: gameId: " + categoryId + " is not in valid format!");
+    console.log("Error: categoryId: " + categoryId + " is not in valid format!");
+    res.status(400).send("Error: categoryId: " + categoryId + " is not in valid format!");
   }
 
   console.log("Finding games by category id: " + categoryId);
@@ -179,21 +179,21 @@ exports.add_game = async function (req, res) {
   Edit game by id
 */
 exports.update_game = async function (req, res) {
-  const gameId = req.params.game_id;
+  const id = req.params.id;
 
   //Check the format of id
-  if ( !checkValidityOfId(gameId) ){
-    console.log("Error: gameId: " + gameId + " is not in valid format!");
-    res.status(400).send("Error: gameId: " + gameId + " is not in valid format!");
+  if ( !checkValidityOfId(id) ){
+    console.log("Error: id: " + id + " is not in valid format!");
+    res.status(400).send("Error: id: " + id + " is not in valid format!");
   }
 
   const updateData = req.body;
   const options = { new: true };
 
-  console.log("Finding game: " + gameId);
+  console.log("Finding game: " + id);
 
   try{
-    const result = await Game.findByIdAndUpdate( gameId, updateData, options );
+    const result = await Game.findByIdAndUpdate( id, updateData, options );
     
     //Check if found any games
     if ( Object.keys(result).length !== 0 ){
@@ -203,8 +203,8 @@ exports.update_game = async function (req, res) {
     }
   }
   catch( error ){
-    console.log("Error while fetching the game: " + req.params.gameId + ", error message: " + error);
-    res.status(400).send("Error while fetching the game: " + req.params.gameId + ", error message: " + error);
+    console.log("Error while fetching the game: " + req.params.id + ", error message: " + error);
+    res.status(400).send("Error while fetching the game: " + req.params.id + ", error message: " + error);
   }
 };
 
@@ -214,29 +214,29 @@ exports.update_game = async function (req, res) {
 */
 exports.delete_game = async function (req, res) {
 
-  const gameId = req.params.game_id;
+  const id = req.params.id;
 
   //Check the format of id
-  if ( !checkValidityOfId(gameId) ){
-    console.log("Error: gameId: " + gameId + " is not in valid format!");
-    res.status(400).send("Error: gameId: " + gameId + " is not in valid format!");
+  if ( !checkValidityOfId(id) ){
+    console.log("Error: id: " + id + " is not in valid format!");
+    res.status(400).send("Error: id: " + id + " is not in valid format!");
   }
 
-  console.log("Finding game: " + gameId);
+  console.log("Finding game: " + id);
 
   try{
-    const result = await Game.findByIdAndDelete( gameId );
+    const result = await Game.findByIdAndDelete( id );
     
     //Check if found any games
     if ( Object.keys(result).length !== 0 ){
-      console.log("Found game: " + gameId );
+      console.log("Found game: " + id );
       console.log("Deleting game data...");
-      res.status(200).send("Game data of the game:" + gameId + " has been deleted.");
-      console.log("Game data of the game:" + gameId + " has been deleted.");
+      res.status(200).send("Game data of the game:" + id + " has been deleted.");
+      console.log("Game data of the game:" + id + " has been deleted.");
     }
   }
   catch( error ){
-    console.log("Error while fetching the game: " + req.params.gameId + ", error message: " + error);
-    res.status(400).send("Error while fetching the game: " + req.params.gameId + ", error message: " + error);
+    console.log("Error while fetching the game: " + id + ", error message: " + error);
+    res.status(400).send("Error while fetching the game: " + id + ", error message: " + error);
   }
 };
