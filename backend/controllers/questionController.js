@@ -25,11 +25,7 @@ exports.get_questions = [
       await Question.find({ category: categoryId })
         .populate('category')
         .then((result) => {
-          if (result.length < 5) {
-            res.status(400).send('Too few questions');
-          } else {
-            res.status(200).json(result);
-          }
+          res.status(200).json(result);
         })
         .catch((error) => {
           res.status(400).send(error);
@@ -69,41 +65,41 @@ exports.get_question = [
 
 // POST new question
 exports.add_question = [
-  body('category', 'Invalid category id')
+  check('*.category', 'Invalid category id')
     .exists()
     .isMongoId()
     .custom((val) => Category.isValidCategory(val))
     .bail(),
-  body('question', "Question can't be empty")
+  check('*.question', "Question can't be empty")
     .trim()
     .notEmpty()
     .isString()
     .escape()
     .bail(),
-  body('type', 'Question type must be defined')
+  check('*.type', 'Question type must be defined')
     .trim()
     .default('multichoice')
     .isString()
     .bail(),
-  body('options', "Options can't be empty")
+  check('*.options', "Options can't be empty")
     .if(body('type').equals('multichoice'))
     .isArray({ min: 4, max: 4 })
     .withMessage('Wrong amount of options')
     .bail(),
-  check('options.*.option', "Option can't be empty")
+  check('*.options.*.option', "Option can't be empty")
     .trim()
     .notEmpty()
     .isString()
     .escape()
     .bail(),
-  check('options.*.isCorrect', 'Option answer must be true or false')
+  check('*.options.*.isCorrect', 'Option answer must be true or false')
     .trim()
     .notEmpty()
     .isString()
     .isIn(['true', 'false'])
     .bail(),
-  body('explanation').trim().escape().default(''),
-  body('hint').trim().escape().default(''),
+  check('*.explanation').trim().escape().default(''),
+  check('*.hint').trim().escape().default(''),
 
   async (req, res) => {
     try {
