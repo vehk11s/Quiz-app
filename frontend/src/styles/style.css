@@ -75,18 +75,15 @@ header {
   height: 80%;
   text-align: center;
   display: flex;
+  align-items: center;
   flex-direction: column;
   gap: 2rem;
 }
 
 .options {
   display: grid;
+  width: 100%;
   gap: 8px;
-}
-
-.options-4 {
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
 }
 
 /* INDEX PAGE */
@@ -143,6 +140,44 @@ header {
   background-color: var(--primary-pink);
 }
 
+/* QUESTION PAGE */
+.options-4 {
+  grid-template-rows: repeat(4, 1fr);
+}
+
+/* END PAGE */
+.score__final {
+  font-size: 7rem;
+}
+
+.player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.player input[type='text'] {
+  height: 3rem !important;
+}
+
+.player input[type='checkbox'] {
+  height: 1.5rem;
+  width: 1.5rem;
+}
+
+.player label:last-child {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.buttons {
+  display: flex;
+  gap: 1rem;
+}
+
 /* Base typography styles */
 h1,
 h2,
@@ -186,6 +221,10 @@ h4 {
 p.title {
   font-size: 2.5rem;
   font-family: var(--font-secondary);
+}
+
+.xxl {
+  font-size: 2rem;
 }
 
 .xl {
@@ -247,8 +286,9 @@ input.btn {
 
 .btn-option {
   font-size: 1.15rem;
-  height: 100%;
-  min-height: 6rem;
+  letter-spacing: 0.8px;
+  font-weight: 400;
+  padding-block: 16px;
   flex: 1;
 }
 

@@ -103,15 +103,15 @@ export async function drawQuestionPhase(gameData) {
   //Reset parent
   screenDiv.innerHTML = '';
 
+  //Get next question
+  let question = await getNextQuestion(gameData);
+
   //set title
   const title = document.createElement('p');
   title.classList.add('title');
-  title.innerText = 'Question';
+  title.innerText = question.category.category;
 
   screenDiv.appendChild(title);
-
-  //Get next question
-  let question = await getNextQuestion(gameData);
 
   //draw title question as a title?
   const questionP = document.createElement('p');
@@ -131,7 +131,7 @@ export async function drawQuestionPhase(gameData) {
     const optionButton = document.createElement('button');
     optionButton.classList.add('btn');
     optionButton.classList.add('btn-option');
-    optionButton.innerText = `${index + 1}. ${question.options[index].option}`;
+    optionButton.innerText = `${question.options[index].option}`;
     optionButton.value = index;
 
     optionsDiv.appendChild(optionButton);
@@ -148,25 +148,65 @@ export async function drawEndingPhase() {
   //set title
   const title = document.createElement('p');
   title.classList.add('title');
-  title.innerText = 'The End';
+  title.innerText = 'Congratulations!';
 
   screenDiv.appendChild(title);
 
   //draw score
+  const scoreDiv = document.createElement('div');
+  scoreDiv.classList.add('score');
+  const scoreText = document.createElement('p');
+  scoreText.classList.add('xxl');
+  scoreText.textContent = 'Your final score is';
 
-  //draw to index button
+  const finalScore = document.createElement('p');
+  finalScore.classList.add('score__final');
+  finalScore.textContent = '3841';
+
+  scoreDiv.appendChild(scoreText);
+  scoreDiv.appendChild(finalScore);
+
+  screenDiv.appendChild(scoreDiv);
+
+  // draw inputs for adding and saving username
+  const playerDiv = document.createElement('div');
+  playerDiv.classList.add('player');
+
+  const nameLabel = document.createElement('label');
+  nameLabel.textContent =
+    'Add username to save your score for the leaderboards';
+  const nameInput = document.createElement('input');
+  nameInput.type = 'text';
+  nameLabel.insertAdjacentElement('beforeend', nameInput);
+
+  const storeLabel = document.createElement('label');
+  storeLabel.textContent = 'Remember me';
+  const storeInput = document.createElement('input');
+  storeInput.type = 'checkbox';
+  storeLabel.insertAdjacentElement('afterbegin', storeInput);
+
+  playerDiv.appendChild(nameLabel);
+  playerDiv.appendChild(storeLabel);
+
+  screenDiv.appendChild(playerDiv);
+
+  //draw buttons
   const buttonsDiv = document.createElement('div');
   buttonsDiv.classList.add('buttons');
 
   screenDiv.appendChild(buttonsDiv);
 
-  //draw startGame button
+  // draw skipButton = retun to main
+  const skipButton = document.createElement('button');
+  skipButton.classList.add('btn', 'btn-secondary');
+  skipButton.textContent = 'Skip';
 
+  // draw submitButton = save score + name and return to main
   const indexButton = document.createElement('button');
-  indexButton.classList.add('btn');
-  indexButton.classList.add('btn-primary');
+  indexButton.classList.add('btn', 'btn-primary');
   indexButton.id = 'btnMainMenu';
-  indexButton.innerText = 'Main menu';
+  indexButton.innerText = 'Submit';
 
+  buttonsDiv.appendChild(skipButton);
   buttonsDiv.appendChild(indexButton);
 }
