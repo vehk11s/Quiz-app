@@ -1,24 +1,44 @@
 const SERVER = "http://127.0.0.1:3000";
 
-
 /*
-  Updates game data based on gameId that is stored in localStorage.
-  At each step increases questionsAnswered variable by one.
+  Updates game data based on gameId.
+  Parameters: gameId Current game id
+              gameData game data got from backend
+              score (How much is increased)
+              incQuestionsAnswered (true/false, do we increase questionsAnswered variable by 1)
+              name (do we update name)
+  Returns:    0 if error
+              updated gameData on success
 */
-export async function updateGame(score, name = "Anonymous") {
+export async function updateGame(gameId, gameData, score = 0, incQuestionsAnswered = false, name = "Anonymous") {
 
-  //todo add validation
-  const id = localStorage.getItem("gameId");
-  
-  //get current gameData from database
-  let gameData = await getGameDataById(id);
+  let data;
 
   //Create updated data to be stored in database
-  let data = {
-    "player": name,
-    "score": parseInt(score),
-    "answeredQuestions": parseInt(gameData[0].questionsAnswered + 1)
-  };
+  if ( incQuestionsAnswered ){
+    data = {
+      "player": name,
+      "score": parseInt(gameData[0].score + score),
+      "questionsAnswered": parseInt(gameData[0].questionsAnswered + 1)
+    };
+
+    //save updated values to gameData
+    gameData[0].score = data.score;
+    gameData[0].player = data.player;
+    gameData[0].questionsAnswered = data.questionsAnswered;
+  }
+  else{
+    data = {
+      "player": name,
+      "score": parseInt(gameData[0].score + score)
+    };
+
+    //save updated values to gameData
+    gameData[0].score = data.score;
+    gameData[0].player = data.player;
+  }
+
+
 
   const settings = {
     method: "PATCH",
@@ -27,7 +47,7 @@ export async function updateGame(score, name = "Anonymous") {
   };
 
   try {
-    let response = await fetch(SERVER + "/games/" + id, settings);
+    let response = await fetch(`${SERVER}/games/${gameId}`, settings);
     let responseInJson = await response.json();
 
     if (!responseInJson) {
@@ -35,7 +55,7 @@ export async function updateGame(score, name = "Anonymous") {
       return 0;
     }
 
-    return 1;
+    return gameData;
   }
   catch (error) {
     console.log("ERROR: Cannot update the game: ", error);
@@ -44,9 +64,9 @@ export async function updateGame(score, name = "Anonymous") {
 };
 
 /*
-  Gets game data by id from backend and returns it in json format.
+  Gets game data by gameId from backend and returns it in json format.
 */
-async function getGameDataById(id){
+export async function getGameDataById(gameId){
   
   const settings = {
     method: "GET",
@@ -54,17 +74,17 @@ async function getGameDataById(id){
   };
   
   try {
-    let response = await fetch(SERVER + "/games/"+ id, settings);
+    let response = await fetch(SERVER + "/games/"+ gameId, settings);
 
     if ( !response ) {
-      console.log("Cannot update the game: ", response);
+      console.log("Cannot get game data: ", response);
       return 0;
     }
 
     return await response.json();
   }
   catch ( error ) {
-    console.log("ERROR: Cannot update the game: ", error);
+    console.log("ERROR: Cannot get game data: ", error);
     return 0;
   }
 };

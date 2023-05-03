@@ -19,7 +19,7 @@ export async function getCategories() {
     }
 };
 
-async function categoryButtons() {
+export async function categoryButtons() {
     const categories = getCategories().then(data => {
         let buttons = document.getElementById('chooseCategory');
         data.forEach(function(object)
