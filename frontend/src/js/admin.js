@@ -211,7 +211,7 @@ async function listCategories() {
 
     const editBtn = createBtn('edit', object.id);
     editBtn.addEventListener('click', (e) => {
-      //
+      categoryForm(e.target.value);
     });
 
     listFooter.appendChild(editBtn);

@@ -152,8 +152,17 @@ function handleSubmit(id) {
     console.log(newCategories);
     postCategory(newCategories);
   }
+  else
+  {
+    const categoryField = document.querySelector('#C1');
 
+    const updatedCategory = {
+      id: id,
+      category: categoryField.value,
+    };
 
+    updateCategory(updatedCategory, id);
+  }
 };
 
 
