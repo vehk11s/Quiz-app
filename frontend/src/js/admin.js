@@ -1,7 +1,7 @@
 import { getQuestions, deleteQuestion } from '../api/questionApi.js';
 import { getCategories } from '../api/categoryApi.js';
 import { drawForm } from './questionForm.js';
-import { categoryForm } from './categoryForm.js';
+import { categoryForm, categoryDeleting } from './categoryForm.js';
 
 let categoryBtn = document.querySelector('#category-btn');
 let questionBtn = document.querySelector('#question-btn');
@@ -206,7 +206,7 @@ async function listCategories() {
 
     const delBtn = createBtn('delete', object.id);
     delBtn.addEventListener('click', (e) => {
-      //
+      categoryDeleting(e.target.value);
     });
 
     const editBtn = createBtn('edit', object.id);

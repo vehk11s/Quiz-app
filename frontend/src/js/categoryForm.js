@@ -14,6 +14,9 @@ import {
   createBtn,
   createDiv,
 } from './formHelpers.js';
+import {
+  getQuestions,
+} from '../api/questionApi.js';
 
 let visibleCategories = 1;
 let totalCategories = 1;
@@ -163,6 +166,54 @@ function handleSubmit(id) {
 
     updateCategory(updatedCategory, id);
   }
+};
+
+/* When deleting a category, check if there is questions in it. If yes, ask user "are you sure" 
+and then delete all the questions in that category and finally the category itself. If there is not questions
+in the category, then delete the category. */
+
+export async function categoryDeleting(id) {
+  // Find the dialog element and clear it from possible content
+  const modal = document.querySelector('dialog');
+  const modalContent = modal.querySelector('.modal__content');
+  modalContent.innerHTML = '';
+
+  let formTitle = 'Delete category';
+  let category = await getCategory(id);
+
+  // Start creating the form
+  const form = createForm('deleteCategory_form', formTitle);
+
+  const formContent = createDiv('form__content');
+
+  const text = document.createElement('p');
+  text.textContent = 'You are trying to delete category: ' + category.category;
+
+  const formFooter = createDiv('form__footer');
+  formContent.appendChild(text);
+  form.appendChild(formContent);
+  form.appendChild(formFooter);
+
+  const button = createBtn('Delete');
+  button.classList.add('btn-primary');
+  button.addEventListener('click', () => {
+    //esim handleSubmit(id);
+    alert("Category id: " + id);
+  });
+
+
+  formFooter.appendChild(button);
+  form.appendChild(formFooter);
+  
+  // Append the full form and then open dialog
+  modalContent.appendChild(form);
+  modal.showModal();
+  
+  const closeBtn = document.querySelector('#close-modal');
+  closeBtn.addEventListener('click', () => {
+    modalContent.innerHTML = '';
+    modal.close();
+  });
 };
 
 
