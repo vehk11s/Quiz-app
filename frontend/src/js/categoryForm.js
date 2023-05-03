@@ -178,8 +178,13 @@ export async function categoryDeleting(id) {
   const modalContent = modal.querySelector('.modal__content');
   modalContent.innerHTML = '';
 
-  let formTitle = 'Delete category';
   let category = await getCategory(id);
+
+  let formTitle = 'Delete ' + category.category + '?';
+
+  const questions = await getQuestions({ category: id});
+  const questionsAmount = Object.keys(questions).length;
+
 
   // Start creating the form
   const form = createForm('deleteCategory_form', formTitle);
@@ -187,14 +192,15 @@ export async function categoryDeleting(id) {
   const formContent = createDiv('form__content');
 
   const text = document.createElement('p');
-  text.textContent = 'You are trying to delete category: ' + category.category;
+  text.textContent = 'There is ' + questionsAmount + ' questions in this category. If you delete it, these questions will be deleted also.'
+  
+  formContent.appendChild(text);
 
   const formFooter = createDiv('form__footer');
-  formContent.appendChild(text);
   form.appendChild(formContent);
   form.appendChild(formFooter);
 
-  const button = createBtn('Delete');
+  const button = createBtn('Confirm');
   button.classList.add('btn-primary');
   button.addEventListener('click', () => {
     //esim handleSubmit(id);
