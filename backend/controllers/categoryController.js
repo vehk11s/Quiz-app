@@ -1,5 +1,6 @@
 const { Collection } = require('mongoose');
 const Category = require('../models/categoryModel');
+const Question = require('../models/questionModel');
 
 // GET all categories 
 exports.get_categories = async function (req, res) {
@@ -53,8 +54,11 @@ exports.edit_category = async function (req,res) {
 exports.delete_category = async function (req, res) {
   try {
     const id = req.params.id;
+    const deleteQuestions = await Question.deleteMany({ category: id});
+    console.log(deleteQuestions);
+
     const deletedCategory = await Category.findByIdAndDelete(id);
-    res.send(`Category ${deletedCategory.category} has been deleted.`)
+    res.send(`Category ${deletedCategory.category} and questions in it has been deleted.`)
   }
   catch (error)
   {

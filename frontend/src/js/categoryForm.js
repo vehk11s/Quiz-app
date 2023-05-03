@@ -203,8 +203,7 @@ export async function categoryDeleting(id) {
   const button = createBtn('Confirm');
   button.classList.add('btn-primary');
   button.addEventListener('click', () => {
-    //esim handleSubmit(id);
-    alert("Category id: " + id);
+    deleteCategory(id);
   });
 
 
