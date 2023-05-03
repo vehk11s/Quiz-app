@@ -17,7 +17,7 @@ export async function drawIndexPage() {
   const title = document.createElement('h1');
   title.innerText = 'Instructions';
 
-  // TODO: Add simple game instructions below the title
+  // TODO: Add simple game instructions below the instructions title
 
   screenDiv.appendChild(title);
 
@@ -29,6 +29,7 @@ export async function drawIndexPage() {
   const chooseCategoryFieldset = document.createElement('fieldset');
   chooseCategoryFieldset.id = 'chooseCategory';
   const categoryLegend = document.createElement('legend');
+  categoryLegend.classList.add('xl');
   categoryLegend.textContent = 'Choose Category';
 
   chooseCategoryFieldset.appendChild(categoryLegend);
@@ -47,28 +48,30 @@ export async function drawIndexPage() {
 
   const legend = document.createElement('legend');
   legend.innerText = 'Choose Difficulty';
+  legend.classList.add('xl');
 
   difficultyFieldset.appendChild(legend);
 
   const difficulties = ['easy', 'medium', 'hard'];
 
-  difficulties.forEach((diff) => {
+  difficulties.forEach((level) => {
     const label = document.createElement('label');
-    label.htmlFor = diff;
-    label.innerText = diff;
-    difficultyFieldset.appendChild(label);
+    label.htmlFor = level;
+    label.innerText = level;
 
     const input = document.createElement('input');
     input.type = 'radio';
-    input.id = diff;
+    input.id = level;
     input.name = 'difficulty';
-    input.value = diff;
+    input.value = level;
 
-    if (diff === 'easy') {
+    if (level === 'easy') {
       input.checked = true;
     }
 
-    difficultyFieldset.appendChild(input);
+    label.insertAdjacentElement('afterbegin', input);
+
+    difficultyFieldset.appendChild(label);
   });
 
   const buttonsDiv = document.createElement('div');
