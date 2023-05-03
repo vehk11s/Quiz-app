@@ -38,7 +38,7 @@ function init(location) {
       break;
     case 'categories':
       title.textContent = 'Categories';
-      text.textContent = 'Lorem ipsum dolor sit amet';
+      text.textContent = 'All categories listed. You can add new from the button below.';
       break;
     default:
       title.textContent = 'Admin';

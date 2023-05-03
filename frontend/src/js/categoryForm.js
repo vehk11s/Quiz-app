@@ -1,5 +1,4 @@
 import { 
-  getCategories,
   getCategory,
   postCategory,
   updateCategory,
