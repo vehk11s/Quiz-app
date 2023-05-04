@@ -308,7 +308,7 @@ async function handleSubmit(id) {
 
       const questionInput = document.querySelector(`#Q${questionNum}`);
 
-      // Fetch all radio buttons
+      // Manual validation of radio buttons to ensure that at least one of them is true
       const valids = Array.from(questionSet.querySelectorAll("[id*='-valid']"));
       let values = [];
 
@@ -376,6 +376,7 @@ async function handleSubmit(id) {
   }
 }
 
+// Keep dialog open if an error occurred
 function handleStatus(response) {
   if (response.status === 200) {
     handleModal();

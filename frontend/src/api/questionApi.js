@@ -21,17 +21,7 @@ export const postQuestion = async (data) => {
     body: JSON.stringify(data),
   });
 
-  if (response.ok) {
-    return {
-      method: 'POST',
-      status: response.status,
-      message: 'Insert successful!',
-    };
-  } else {
-    const errors = await response.json();
-    const errorMessage = Object.values(errors)[0].msg;
-    return { method: 'POST', status: response.status, message: errorMessage };
-  }
+  return formatResponse(response, 'PATCH', 'Question(s) saved successfully!');
 };
 
 export const updateQuestion = async (data, id) => {
@@ -41,17 +31,7 @@ export const updateQuestion = async (data, id) => {
     body: JSON.stringify(data),
   });
 
-  if (response.ok) {
-    return {
-      method: 'PATCH',
-      status: response.status,
-      message: 'Update successful!',
-    };
-  } else {
-    const errors = await response.json();
-    const errorMessage = Object.values(errors)[0].msg;
-    return { method: 'PATCH', status: response.status, message: errorMessage };
-  }
+  return formatResponse(response, 'PATCH', 'Question updated successfully!');
 };
 
 export const deleteQuestion = async (id) => {
@@ -59,17 +39,21 @@ export const deleteQuestion = async (id) => {
     method: 'DELETE',
   });
 
+  return formatResponse(response, 'DEL', 'Question deleted successfully!');
+};
+
+
+// Handles keeping responses in same format for easier message handling
+const formatResponse = async (response, method, success) => {
+  const res = { method: method, status: response.status, message: '' };
+
   if (response.ok) {
-    console.log('deleted');
-    console.log(response.status);
-    return {
-      method: 'DEL',
-      status: response.status,
-      message: 'Deletion successful!',
-    };
+    res.message = success;
   } else {
     const errors = await response.json();
     const errorMessage = Object.values(errors)[0].msg;
-    return { method: 'DEL', status: response.status, message: errorMessage };
+    res.message = errorMessage;
   }
+
+  return res;
 };

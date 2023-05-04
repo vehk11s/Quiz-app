@@ -31,7 +31,7 @@ exports.get_questions = [
           res.status(400).send(error);
         });
     } catch (error) {
-      res.status(400).send({ errors: error.mapped() });
+      res.status(400).send(error.mapped());
     }
   },
 ];
@@ -58,7 +58,7 @@ exports.get_question = [
           res.send(error);
         });
     } catch (error) {
-      res.status(400).send({ errors: error.mapped() });
+      res.status(400).send(error.mapped());
     }
   },
 ];
@@ -188,7 +188,7 @@ exports.delete_question = [
         })
         .catch((error) => res.status(400).send(error));
     } catch (error) {
-      res.status(400).send({ errors: error.mapped() });
+      res.status(400).send(error.mapped());
     }
   },
 ];
