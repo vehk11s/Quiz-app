@@ -51,6 +51,8 @@ function init(location) {
   section.appendChild(title);
   section.appendChild(text);
 
+  // Questions
+  // Draw Add New Questions -button
   if (location === 'questions') {
     const button = document.createElement('button');
     button.classList.add('btn', 'btn-primary');
@@ -116,25 +118,25 @@ function setListeners() {
   buttons.forEach((button) => {
     button.addEventListener('click', async () => {
       const questions = await getQuestions({ category: button.id });
-      createContent(questions);
+      listQuestions(questions);
     });
   });
 }
 
-function createContent(elements) {
+function listQuestions(questions) {
   const section = document.querySelector('section');
   section.innerHTML = ''; // Remove content
 
   const list = document.createElement('ol'); // Main listing
 
-  elements.forEach((element) => {
+  questions.forEach((question) => {
     const questionItem = document.createElement('li');
-    questionItem.textContent = element.question;
+    questionItem.textContent = question.question;
     questionItem.classList.add('list__question');
 
     const optionsList = document.createElement('ol');
 
-    element.options.forEach((option) => {
+    question.options.forEach((option) => {
       const optionItem = document.createElement('li');
 
       if (option.isCorrect) {
@@ -151,16 +153,17 @@ function createContent(elements) {
     const listFooter = document.createElement('div');
     listFooter.classList.add('row', 'list__footer');
 
-    const delBtn = createBtn('delete', element.id);
-    delBtn.addEventListener('click', (e) => {
+    // Draw Delete Question -button
+    const delBtn = createBtn('delete', question.id);
+    delBtn.addEventListener('click', async (e) => {
       if (confirm('Delete question?')) {
-        console.log(e.target.value);
-        deleteQuestion(e.target.value);
-        drawMessage(2);
+        const response = await deleteQuestion(e.target.value);
+        drawMessage(response);
       }
     });
 
-    const editBtn = createBtn('edit', element.id);
+    // Draw Edit Question -button
+    const editBtn = createBtn('edit', question.id);
     editBtn.addEventListener('click', (e) => {
       drawForm(e.target.value);
     });

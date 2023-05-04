@@ -21,7 +21,17 @@ export const postQuestion = async (data) => {
     body: JSON.stringify(data),
   });
 
-  return response.json();
+  if (response.ok) {
+    return {
+      method: 'POST',
+      status: response.status,
+      message: 'Insert successful!',
+    };
+  } else {
+    const errors = await response.json();
+    const errorMessage = Object.values(errors)[0].msg;
+    return { method: 'POST', status: response.status, message: errorMessage };
+  }
 };
 
 export const updateQuestion = async (data, id) => {
@@ -31,7 +41,17 @@ export const updateQuestion = async (data, id) => {
     body: JSON.stringify(data),
   });
 
-  return response.json();
+  if (response.ok) {
+    return {
+      method: 'PATCH',
+      status: response.status,
+      message: 'Update successful!',
+    };
+  } else {
+    const errors = await response.json();
+    const errorMessage = Object.values(errors)[0].msg;
+    return { method: 'PATCH', status: response.status, message: errorMessage };
+  }
 };
 
 export const deleteQuestion = async (id) => {
@@ -39,6 +59,17 @@ export const deleteQuestion = async (id) => {
     method: 'DELETE',
   });
 
-  console.log(id + ' deleted');
-  return response;
+  if (response.ok) {
+    console.log('deleted');
+    console.log(response.status);
+    return {
+      method: 'DEL',
+      status: response.status,
+      message: 'Deletion successful!',
+    };
+  } else {
+    const errors = await response.json();
+    const errorMessage = Object.values(errors)[0].msg;
+    return { method: 'DEL', status: response.status, message: errorMessage };
+  }
 };

@@ -1,29 +1,28 @@
-export const drawMessage = (status) => {
+export const drawMessage = (response) => {
+  const { method, status, message } = response;
   const messageDiv = document.createElement('div');
   messageDiv.classList.add('message');
 
+  console.log(response);
+
   const messageText = document.createElement('p');
 
-  switch (status) {
-    case 0:
-      messageDiv.classList.add('msg-success');
-      messageText.textContent = 'Insert successful';
-      break;
-    case 1:
-      messageDiv.classList.add('msg-success');
-      messageText.textContent = 'Update successful';
-      break;
-    case 2:
-      messageDiv.classList.add('msg-success');
-      messageText.textContent =
-        'Deletion successful, refresh page to see changes';
-      break;
-    case 3:
-      messageDiv.classList.add('msg-error');
-      messageText.textContent = 'Error';
-      break;
+  if (status === 200) {
+    messageDiv.classList.add('msg-success');
+  } else {
+    messageDiv.classList.add('msg-error');
   }
+  messageText.textContent = message;
+
   messageDiv.appendChild(messageText);
+
+  if (status === 200) {
+    if (method === 'DEL' || method === 'PATCH') {
+      const text = document.createElement('p');
+      text.textContent = 'Update page to see changes';
+      messageDiv.appendChild(text);
+    }
+  }
 
   displayMessage(messageDiv);
 };
@@ -32,9 +31,9 @@ const displayMessage = (messageDiv) => {
   const body = document.querySelector('body');
   body.appendChild(messageDiv);
 
-  setTimeout(function () {
+  /*   setTimeout(function () {
     removeMessage(messageDiv);
-  }, 4000);
+  }, 4000); */
 };
 
 const removeMessage = (messageDiv) => {

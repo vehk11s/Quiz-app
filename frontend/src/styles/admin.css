@@ -129,12 +129,19 @@ p {
 
 .message {
   display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-block: 1rem;
   align-items: center;
   width: 100%;
   place-content: center;
   position: fixed;
   bottom: -100%;
   animation: showMessage 4s ease-in-out;
+}
+
+.message p {
+  padding: 0;
 }
 
 @keyframes showMessage {
@@ -153,10 +160,6 @@ p {
   100% {
     bottom: -100%;
   }
-}
-
-.message p {
-  padding-block: 1rem;
 }
 
 .msg-success {

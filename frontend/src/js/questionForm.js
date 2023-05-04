@@ -25,7 +25,17 @@ If editing an existing question, the Edit-button sends an ID parameter to the fu
 this parameter to find the correct question and adjusts the form elements correctly.
 */
 
-const handleModal = () => {
+/* const handleModal = () => {
+  const modal = document.querySelector('dialog');
+
+  if (modal.open) {
+    modal.close();
+  } else {
+    modal.showModal();
+  }
+}; */
+
+export const handleModal = () => {
   const modal = document.querySelector('dialog');
 
   if (modal.open) {
@@ -230,6 +240,10 @@ function drawOptions(question) {
       `Q${totalQuestions}-correct`
     );
 
+    if (optionNum != 1) {
+      validInput.required = false;
+    }
+
     // Set default values for editing form
     if (question) {
       optionInput.value = question.options[optionNum - 1].option;
@@ -272,7 +286,10 @@ function handleRemove(e) {
 }
 
 // Handles both saving new questions and updating an existing question
-function handleSubmit(id) {
+async function handleSubmit(id) {
+  let response;
+  let hasErrors;
+
   // Get selected category id
   const category = document.querySelector(
     'input[name="category"]:checked'
@@ -291,11 +308,24 @@ function handleSubmit(id) {
 
       const questionInput = document.querySelector(`#Q${questionNum}`);
 
+      // Fetch all radio buttons
+      const valids = Array.from(questionSet.querySelectorAll("[id*='-valid']"));
+      let values = [];
+
+      valids.forEach((item) => {
+        values.push(item.checked);
+      });
+
+      if (values.every((val) => val === false)) {
+        hasErrors = true;
+      }
+
       // Select all corresponding options sets inside parent
       for (let optionNum = 1; optionNum <= AMT_OF_OPTIONS; optionNum++) {
         const optionSets = questionSet.querySelectorAll(
           `[id^='${questionNum}O${optionNum}']`
         );
+
         questionOptions.push({
           option: optionSets[0].value,
           isCorrect: optionSets[1].checked,
@@ -310,9 +340,9 @@ function handleSubmit(id) {
       newQuestions.push(newQuestion);
     });
 
-    postQuestion(newQuestions);
-    handleModal();
-    drawMessage(0);
+    if (!hasErrors) {
+      response = await postQuestion(newQuestions);
+    }
   } else {
     const questionField = document.querySelector('#Q1');
     const options = [];
@@ -338,10 +368,19 @@ function handleSubmit(id) {
       category: category,
     };
 
-    updateQuestion(updatedQuestion, id);
-    handleModal();
-    drawMessage(1);
+    response = await updateQuestion(updatedQuestion, id);
   }
+
+  if (!hasErrors) {
+    handleStatus(response);
+  }
+}
+
+function handleStatus(response) {
+  if (response.status === 200) {
+    handleModal();
+  }
+  drawMessage(response);
 }
 
 export function createRemoveBtn() {

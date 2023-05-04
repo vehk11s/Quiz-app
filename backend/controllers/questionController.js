@@ -96,8 +96,7 @@ exports.add_question = [
     .trim()
     .notEmpty()
     .isString()
-    .isIn(['true', 'false'])
-    .bail(),
+    .isIn(['true', 'false']),
   check('*.explanation').trim().escape().default(''),
   check('*.hint').trim().escape().default(''),
 
@@ -109,7 +108,7 @@ exports.add_question = [
         .then((saved) => res.json(saved))
         .catch((error) => res.send(error));
     } catch (error) {
-      res.status(400).send({ errors: error.mapped() });
+      res.status(400).send(error.mapped());
     }
   },
 ];
@@ -132,13 +131,12 @@ exports.edit_question = [
     .default('multichoice')
     .isString()
     .optional(),
-  body('options', "Options can't be empty")
-    .if(body('type').equals('multichoice'))
-    .isArray({ min: 4, max: 4 })
-    .withMessage('Wrong amount of options')
-    .optional(),
+  body('options', 'Wrong amount of options').isArray({ min: 4, max: 4 }),
   check('options.*._id', 'Invalid option id').exists().isMongoId().optional(),
-  check('options.*._option', "Option can't be empty").escape().optional(),
+  check('options.*.option', "Option can't be empty")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
   check('options.*.isCorrect', 'Option answer must be true or false')
     .trim()
     .notEmpty()
@@ -167,7 +165,7 @@ exports.edit_question = [
         })
         .catch((error) => res.send(error));
     } catch (error) {
-      res.status(400).send({ errors: error.mapped() });
+      res.status(400).send(error.mapped());
     }
   },
 ];
