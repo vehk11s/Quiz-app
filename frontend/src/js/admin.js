@@ -2,6 +2,7 @@ import { getQuestions, deleteQuestion } from '../api/questionApi.js';
 import { getCategories } from '../api/categoryApi.js';
 import { drawForm } from './questionForm.js';
 import { categoryForm, categoryDeleting } from './categoryForm.js';
+import { drawMessage } from './message.js';
 
 let categoryBtn = document.querySelector('#category-btn');
 let questionBtn = document.querySelector('#question-btn');
@@ -38,7 +39,8 @@ function init(location) {
       break;
     case 'categories':
       title.textContent = 'Categories';
-      text.textContent = 'All categories listed. You can add new from the button below.';
+      text.textContent =
+        'All categories listed. You can add new from the button below.';
       break;
     default:
       title.textContent = 'Admin';
@@ -151,7 +153,11 @@ function createContent(elements) {
 
     const delBtn = createBtn('delete', element.id);
     delBtn.addEventListener('click', (e) => {
-      deleteQuestion(e.target.value);
+      if (confirm('Delete question?')) {
+        console.log(e.target.value);
+        deleteQuestion(e.target.value);
+        drawMessage(2);
+      }
     });
 
     const editBtn = createBtn('edit', element.id);
@@ -195,7 +201,7 @@ async function listCategories() {
 
   const categories = await getCategories();
 
-  categories.forEach(function(object){
+  categories.forEach(function (object) {
     const categoryItem = document.createElement('li');
 
     categoryItem.textContent = object.category;
@@ -220,6 +226,5 @@ async function listCategories() {
     categoryItem.appendChild(listFooter);
     list.appendChild(categoryItem);
     section.appendChild(list);
-
   });
 }

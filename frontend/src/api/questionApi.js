@@ -40,5 +40,5 @@ export const deleteQuestion = async (id) => {
   });
 
   console.log(id + ' deleted');
-  return response.json();
+  return response;
 };

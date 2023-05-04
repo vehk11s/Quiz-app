@@ -13,6 +13,7 @@ import {
   createBtn,
   createDiv,
 } from './formHelpers.js';
+import { drawMessage } from './message.js';
 
 let visibleQuestions = 1; // Tracks the visible question sets on display, used for dynamical indexing
 let totalQuestions = 1; // Doesn't decrease when removing a question, used for element ids
@@ -23,6 +24,16 @@ drawForm handles the constructing and drawing the form inside the dialog element
 If editing an existing question, the Edit-button sends an ID parameter to the function. drawForm uses
 this parameter to find the correct question and adjusts the form elements correctly.
 */
+
+const handleModal = () => {
+  const modal = document.querySelector('dialog');
+
+  if (modal.open) {
+    modal.close();
+  } else {
+    modal.showModal();
+  }
+};
 
 export async function drawForm(id) {
   // Find the dialog element and clear it from possible content
@@ -300,6 +311,8 @@ function handleSubmit(id) {
     });
 
     postQuestion(newQuestions);
+    handleModal();
+    drawMessage(0);
   } else {
     const questionField = document.querySelector('#Q1');
     const options = [];
@@ -326,6 +339,8 @@ function handleSubmit(id) {
     };
 
     updateQuestion(updatedQuestion, id);
+    handleModal();
+    drawMessage(1);
   }
 }
 

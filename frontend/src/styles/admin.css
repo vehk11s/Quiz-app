@@ -122,8 +122,47 @@ dialog::backdrop {
   border-bottom: 2px solid var(--primary-pink-light);
 }
 
-p
-{
+p {
   padding-top: 0.5rem;
   padding-bottom: 1rem;
+}
+
+.message {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  place-content: center;
+  position: fixed;
+  bottom: -100%;
+  animation: showMessage 4s ease-in-out;
+}
+
+@keyframes showMessage {
+  0% {
+    bottom: -100%;
+  }
+
+  10% {
+    bottom: 0;
+  }
+
+  90% {
+    bottom: 0;
+  }
+
+  100% {
+    bottom: -100%;
+  }
+}
+
+.message p {
+  padding-block: 1rem;
+}
+
+.msg-success {
+  background-color: var(--quiz-correct);
+}
+
+.msg-error {
+  background-color: var(--quiz-incorrect);
 }
