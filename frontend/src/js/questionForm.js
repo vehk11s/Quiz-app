@@ -92,8 +92,8 @@ export async function drawForm(id) {
   // Submit button is added to both forms
   const submitBtn = createBtn('Save');
   submitBtn.classList.add('btn-primary');
-  submitBtn.addEventListener('click', () => {
-    handleSubmit(id);
+  submitBtn.addEventListener('click', (e) => {
+    handleSubmit(id, e);
   });
 
   formFooter.appendChild(submitBtn);
@@ -246,7 +246,8 @@ function handleRemove(e) {
 }
 
 // Handles both saving new questions and updating an existing question
-function handleSubmit(id) {
+function handleSubmit(id, e) {
+  e.preventDefault();
   // Get selected category id
   const category = document.querySelector(
     'input[name="category"]:checked'

@@ -20,6 +20,7 @@ export async function getCategories() {
     }
 };
 
+
 // Get category by id
 export async function getCategory(id) {
     const settings = {
@@ -96,6 +97,7 @@ export async function deleteCategory(id) {
 
 // This function needs to be removed to another file.
 export async function categoryButtons() {
+
     getCategories().then(data => {
         let buttons = document.getElementById('chooseCategory');
         data.forEach(function(object)
@@ -117,4 +119,5 @@ export async function categoryButtons() {
         
         });
     });
-};
+  });
+}

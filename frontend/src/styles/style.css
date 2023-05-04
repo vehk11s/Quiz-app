@@ -47,7 +47,7 @@ body {
 main,
 header,
 footer {
-  width: 1000px;
+  width: 100%;
   padding: 50px;
 }
 
@@ -75,15 +75,107 @@ header {
   height: 80%;
   text-align: center;
   display: flex;
+  align-items: center;
   flex-direction: column;
   gap: 2rem;
 }
 
 .options {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  width: 100%;
   gap: 8px;
+}
+
+/* INDEX PAGE */
+.options-2 {
+  grid-template-rows: repeat(2, auto);
+  gap: 2rem;
+}
+
+.options-2 legend {
+  text-align: start;
+  margin-bottom: 0.5rem;
+}
+
+.options-2 fieldset {
+  display: grid;
+  justify-content: flex-start;
+  grid-template-columns: repeat(auto-fill, minmax(224px, 1fr));
+  gap: 0.5rem;
+}
+
+.options-2 label {
+  display: flex;
+  place-content: center;
+  position: relative;
+  border: 2px solid var(--primary-pink);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.15rem;
+
+  height: 5rem;
+  padding: 16px 8px;
+}
+
+.options-2 label > input[type='radio'] {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  opacity: 0;
+}
+
+/* Adds visible focus outline even when the actual input element is hidden */
+.options-2 label:focus-within {
+  outline: 2px solid white;
+}
+
+.options-2 label:hover {
+  border: 2px solid var(--primary-pink);
+  background-color: var(--primary-pink-subtle);
+}
+
+.options-2 label:has(input[type='radio']:checked) {
+  border: 2px solid var(--primary-pink);
+  background-color: var(--primary-pink);
+}
+
+/* QUESTION PAGE */
+.options-4 {
+  grid-template-rows: repeat(4, 1fr);
+}
+
+/* END PAGE */
+.score__final {
+  font-size: 7rem;
+}
+
+.player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.player input[type='text'] {
+  height: 3rem !important;
+}
+
+.player input[type='checkbox'] {
+  height: 1.5rem;
+  width: 1.5rem;
+}
+
+.player label:last-child {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.buttons {
+  display: flex;
+  gap: 1rem;
 }
 
 /* Base typography styles */
@@ -110,7 +202,8 @@ h5 {
 }
 
 h1 {
-  font-size: 3.5rem;
+  font-size: 3.25rem;
+  font-weight: 400;
 }
 
 h2 {
@@ -128,6 +221,10 @@ h4 {
 p.title {
   font-size: 2.5rem;
   font-family: var(--font-secondary);
+}
+
+.xxl {
+  font-size: 2rem;
 }
 
 .xl {
@@ -189,8 +286,9 @@ input.btn {
 
 .btn-option {
   font-size: 1.15rem;
-  height: 100%;
-  min-height: 6rem;
+  letter-spacing: 0.8px;
+  font-weight: 400;
+  padding-block: 16px;
   flex: 1;
 }
 

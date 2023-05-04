@@ -1,6 +1,5 @@
 import { categoryButtons } from '../api/categoryApi.js';
-import { getNextQuestion } from '../api/game/getNextQuestion.js'
-
+import { getNextQuestion } from '../api/game/getNextQuestion.js';
 
 /*
   Draws the starting phase of the game where player can select category, difficulty etc.
@@ -15,61 +14,65 @@ export async function drawIndexPage() {
   screenDiv.innerHTML = '';
 
   //set title
-  const title = document.createElement('p');
-  title.classList.add('title');
-  title.innerText = 'Main Menu'
+  const title = document.createElement('h1');
+  title.innerText = 'Instructions';
+
+  // TODO: Add simple game instructions below the instructions title
 
   screenDiv.appendChild(title);
 
-
   const optionsDiv = document.createElement('div');
-  optionsDiv.classList.add('options');
+  optionsDiv.classList.add('options', 'options-2');
 
   screenDiv.appendChild(optionsDiv);
 
   const chooseCategoryFieldset = document.createElement('fieldset');
   chooseCategoryFieldset.id = 'chooseCategory';
+  const categoryLegend = document.createElement('legend');
+  categoryLegend.classList.add('xl');
+  categoryLegend.textContent = 'Choose Category';
+
+  chooseCategoryFieldset.appendChild(categoryLegend);
 
   optionsDiv.appendChild(chooseCategoryFieldset);
-
 
   //draw categories
 
   //getCategories from db
   await categoryButtons();
 
-
   //draw difficulty
 
-  const difficultyFieldset = document.createElement("fieldset");
+  const difficultyFieldset = document.createElement('fieldset');
   optionsDiv.appendChild(difficultyFieldset);
 
   const legend = document.createElement('legend');
   legend.innerText = 'Choose Difficulty';
+  legend.classList.add('xl');
 
   difficultyFieldset.appendChild(legend);
 
   const difficulties = ['easy', 'medium', 'hard'];
 
-  difficulties.forEach( diff => {
-    const label = document.createElement("label");
-    label.htmlFor = diff;
-    label.innerText = diff;
-    difficultyFieldset.appendChild(label);
+  difficulties.forEach((level) => {
+    const label = document.createElement('label');
+    label.htmlFor = level;
+    label.innerText = level;
 
-    const input = document.createElement("input");
-    input.type = "radio";
-    input.id = diff;
-    input.name = "difficulty"
-    input.value = diff;
+    const input = document.createElement('input');
+    input.type = 'radio';
+    input.id = level;
+    input.name = 'difficulty';
+    input.value = level;
 
-    if ( diff === 'easy' ){
+    if (level === 'easy') {
       input.checked = true;
     }
 
-    difficultyFieldset.appendChild(input);
-  } );
+    label.insertAdjacentElement('afterbegin', input);
 
+    difficultyFieldset.appendChild(label);
+  });
 
   const buttonsDiv = document.createElement('div');
   buttonsDiv.classList.add('buttons');
@@ -81,36 +84,34 @@ export async function drawIndexPage() {
   const startButton = document.createElement('button');
   startButton.classList.add('btn');
   startButton.classList.add('btn-primary');
-  startButton.id    = 'btnStartGame';
+  startButton.id = 'btnStartGame';
   startButton.innerText = 'Start game';
 
   buttonsDiv.appendChild(startButton);
 
   //draw cancel button?
-};
-
-
+}
 
 /*
   Draws the starting phase of the game where player can select category, difficulty etc.
 */
 
-export async function drawQuestionPhase( gameData ){
+export async function drawQuestionPhase(gameData) {
   //Parent area
   const screenDiv = document.getElementById('screen');
 
   //Reset parent
   screenDiv.innerHTML = '';
 
+  //Get next question
+  let question = await getNextQuestion(gameData);
+
   //set title
   const title = document.createElement('p');
   title.classList.add('title');
-  title.innerText = 'Question'
+  title.innerText = question.category.category;
 
   screenDiv.appendChild(title);
-
-  //Get next question
-  let question = await getNextQuestion(gameData);
 
   //draw title question as a title?
   const questionP = document.createElement('p');
@@ -119,7 +120,6 @@ export async function drawQuestionPhase( gameData ){
 
   screenDiv.appendChild(questionP);
 
-
   //draw option buttons
 
   const optionsDiv = document.createElement('div');
@@ -127,26 +127,18 @@ export async function drawQuestionPhase( gameData ){
 
   screenDiv.appendChild(optionsDiv);
 
-  for ( let index = 0; index < question.options.length; index++ ){
+  for (let index = 0; index < question.options.length; index++) {
     const optionButton = document.createElement('button');
     optionButton.classList.add('btn');
     optionButton.classList.add('btn-option');
-    optionButton.innerText = `${index + 1}. ${question.options[index].option}`;
+    optionButton.innerText = `${question.options[index].option}`;
     optionButton.value = index;
 
     optionsDiv.appendChild(optionButton);
   }
-};
+}
 
-
-
-
-
-
-
-
-
-export async function drawEndingPhase(){
+export async function drawEndingPhase() {
   //parent id: screen
   const screenDiv = document.getElementById('screen');
 
@@ -156,26 +148,65 @@ export async function drawEndingPhase(){
   //set title
   const title = document.createElement('p');
   title.classList.add('title');
-  title.innerText = 'The End'
+  title.innerText = 'Congratulations!';
 
   screenDiv.appendChild(title);
 
-
   //draw score
+  const scoreDiv = document.createElement('div');
+  scoreDiv.classList.add('score');
+  const scoreText = document.createElement('p');
+  scoreText.classList.add('xxl');
+  scoreText.textContent = 'Your final score is';
 
-  //draw to index button
+  const finalScore = document.createElement('p');
+  finalScore.classList.add('score__final');
+  finalScore.textContent = '3841';
+
+  scoreDiv.appendChild(scoreText);
+  scoreDiv.appendChild(finalScore);
+
+  screenDiv.appendChild(scoreDiv);
+
+  // draw inputs for adding and saving username
+  const playerDiv = document.createElement('div');
+  playerDiv.classList.add('player');
+
+  const nameLabel = document.createElement('label');
+  nameLabel.textContent =
+    'Add username to save your score for the leaderboards';
+  const nameInput = document.createElement('input');
+  nameInput.type = 'text';
+  nameLabel.insertAdjacentElement('beforeend', nameInput);
+
+  const storeLabel = document.createElement('label');
+  storeLabel.textContent = 'Remember me';
+  const storeInput = document.createElement('input');
+  storeInput.type = 'checkbox';
+  storeLabel.insertAdjacentElement('afterbegin', storeInput);
+
+  playerDiv.appendChild(nameLabel);
+  playerDiv.appendChild(storeLabel);
+
+  screenDiv.appendChild(playerDiv);
+
+  //draw buttons
   const buttonsDiv = document.createElement('div');
   buttonsDiv.classList.add('buttons');
 
   screenDiv.appendChild(buttonsDiv);
 
-  //draw startGame button
+  // draw skipButton = retun to main
+  const skipButton = document.createElement('button');
+  skipButton.classList.add('btn', 'btn-secondary');
+  skipButton.textContent = 'Skip';
 
+  // draw submitButton = save score + name and return to main
   const indexButton = document.createElement('button');
-  indexButton.classList.add('btn');
-  indexButton.classList.add('btn-primary');
-  indexButton.id    = 'btnMainMenu';
-  indexButton.innerText = 'Main menu';
+  indexButton.classList.add('btn', 'btn-primary');
+  indexButton.id = 'btnMainMenu';
+  indexButton.innerText = 'Submit';
 
+  buttonsDiv.appendChild(skipButton);
   buttonsDiv.appendChild(indexButton);
-};
+}
