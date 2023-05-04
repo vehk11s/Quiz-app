@@ -70,6 +70,35 @@ header {
   justify-content: space-between;
 }
 
+nav {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 1.15rem;
+  padding-block: 4px;
+  border-bottom: 2px solid transparent;
+}
+
+.nav__link svg {
+  fill: var(--primary-white);
+  height: 1.15em;
+  width: 1.15em;
+  transition: all 0.1s ease-out;
+}
+
+.nav__link:hover svg {
+  fill: var(--primary-pink-light);
+}
+
+.nav__link:hover {
+  border-bottom: 2px solid var(--primary-pink-light);
+}
+
 #screen {
   width: 90%;
   height: 80%;
@@ -218,9 +247,14 @@ h4 {
   font-size: 2rem;
 }
 
-p.title {
+p.title,
+a.title {
   font-size: 2.5rem;
   font-family: var(--font-secondary);
+}
+
+a {
+  text-decoration: none;
 }
 
 .xxl {
@@ -257,6 +291,7 @@ input.btn {
   gap: 0.5rem;
 }
 
+/* Uses em to dynamically adjust size depending on button text size */
 .btn svg {
   height: 1.15em;
   width: 1.15em;
