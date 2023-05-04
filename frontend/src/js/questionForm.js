@@ -33,10 +33,10 @@ export async function drawForm(id) {
   let formTitle = 'Add question';
   let question;
 
-  // Add instructions for the user
+  // Draw instructions
   let formInfo = document.createElement('p');
   formInfo.textContent =
-    'Currently this form allows adding only multi-choice questions. All fields are required and a question may have only one correct answer. All questions saved within the same form must all belong in same category.';
+    'Currently only multichoice questions can be added. All fields are required and a question may have only one correct answer. All questions saved within the same form must all belong in same category.';
 
   // Change form title + info and save the full question in a variable
   if (id) {
@@ -45,15 +45,22 @@ export async function drawForm(id) {
     formInfo.textContent = 'All fields are required.';
   }
 
-  // Start creating the form
+  // Draw form
   const form = createForm('question_form', formTitle);
   form.appendChild(formInfo);
 
-  const categories = createFieldset();
-  categories.classList.add('categories');
+  // Draw categories
+  const categorySet = createFieldset();
+  categorySet.classList.add('categories');
+
+  const categoryLegend = document.createElement('legend');
+  categoryLegend.textContent = 'Select category';
+
+  categorySet.appendChild(categoryLegend);
 
   // Fetch categories and set the radio button group dynamically
   const data = await getCategories();
+
   data.forEach((category) => {
     const { category: name, id } = category;
 
@@ -70,10 +77,10 @@ export async function drawForm(id) {
     label.appendChild(input);
     label.insertAdjacentText('beforeend', name);
 
-    categories.appendChild(label);
+    categorySet.appendChild(label);
   });
 
-  form.appendChild(categories);
+  form.appendChild(categorySet);
 
   const formContent = createDiv('form__content');
   const formFooter = createDiv('form__footer');
@@ -99,8 +106,8 @@ export async function drawForm(id) {
   // Submit button is added to both forms
   const submitBtn = createBtn('Save');
   submitBtn.classList.add('btn-primary');
-  submitBtn.addEventListener('click', (e) => {
-    handleSubmit(id, e);
+  submitBtn.addEventListener('click', () => {
+    handleSubmit(id);
   });
 
   formFooter.appendChild(submitBtn);
@@ -145,6 +152,7 @@ function drawQuestion(question) {
 
   const questionLabel = createLabel(`Q${totalQuestions}`, 'Question');
   const questionInput = createInput(`Q${totalQuestions}`);
+  questionInput.minLength = '10';
 
   // Set default value for editing form
   if (question) {
@@ -253,8 +261,7 @@ function handleRemove(e) {
 }
 
 // Handles both saving new questions and updating an existing question
-function handleSubmit(id, e) {
-  e.preventDefault();
+function handleSubmit(id) {
   // Get selected category id
   const category = document.querySelector(
     'input[name="category"]:checked'
