@@ -1,5 +1,6 @@
 const { Collection } = require('mongoose');
 const Category = require('../models/categoryModel');
+const Question = require('../models/questionModel');
 
 // GET all categories 
 exports.get_categories = async function (req, res) {
@@ -10,19 +11,11 @@ exports.get_categories = async function (req, res) {
 };
 
 // POST new category
-exports.add_category = function (req, res) {
+exports.add_category = async function (req, res) {
   const body = req.body;
-  console.log(req.body);
+  console.log(body);
 
-  if (body.category === undefined) {
-    return res.status(400).json({ error: 'Category name missing' });
-  }
-
-  const category = new Category({
-    category: body.category,
-  });
-
-  category.save().then((saved) => {
+  await Category.insertMany(body).then((saved) => {
     res.json(saved);
   });
 };
@@ -61,8 +54,11 @@ exports.edit_category = async function (req,res) {
 exports.delete_category = async function (req, res) {
   try {
     const id = req.params.id;
+    const deleteQuestions = await Question.deleteMany({ category: id});
+    console.log(deleteQuestions);
+
     const deletedCategory = await Category.findByIdAndDelete(id);
-    res.send(`Category ${deletedCategory.category} has been deleted.`)
+    res.send(`Category ${deletedCategory.category} and questions in it has been deleted.`)
   }
   catch (error)
   {

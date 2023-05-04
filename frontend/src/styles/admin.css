@@ -94,3 +94,32 @@ dialog {
 dialog::backdrop {
   background-color: rgba(0, 0, 0, 0.3);
 }
+
+.form__category {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+  border-bottom: 1px solid var(--primary-pink-light);
+  margin-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.list__categories {
+  position: static !important;
+  padding: 1rem;
+}
+
+.list__categories .btn-icon {
+  position: static !important;
+}
+
+.list__categories:not(:last-child) {
+  border-bottom: 2px solid var(--primary-pink-light);
+}
+
+p
+{
+  padding-top: 0.5rem;
+  padding-bottom: 1rem;
+}
