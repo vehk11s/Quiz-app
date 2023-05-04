@@ -4,6 +4,10 @@ form {
   gap: 1rem;
 }
 
+form > p.xl + p {
+  margin-top: -1.5rem;
+}
+
 .categories {
   display: grid;
   gap: 0.5rem;

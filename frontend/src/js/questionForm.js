@@ -33,14 +33,21 @@ export async function drawForm(id) {
   let formTitle = 'Add question';
   let question;
 
-  // Change form title and save the full question in a variable
+  // Add instructions for the user
+  let formInfo = document.createElement('p');
+  formInfo.textContent =
+    'Currently this form allows adding only multi-choice questions. All fields are required and a question may have only one correct answer. All questions saved within the same form must all belong in same category.';
+
+  // Change form title + info and save the full question in a variable
   if (id) {
     formTitle = 'Edit question';
     question = await getQuestion(id);
+    formInfo.textContent = 'All fields are required.';
   }
 
   // Start creating the form
   const form = createForm('question_form', formTitle);
+  form.appendChild(formInfo);
 
   const categories = createFieldset();
   categories.classList.add('categories');
