@@ -9,7 +9,7 @@ const SERVER = "http://127.0.0.1:3000";
               name (do we update name)
   Returns:    0 if error
               updated gameData on success
-*/
+
 export async function updateGame(gameId, gameData, score = 0, incQuestionsAnswered = false, name = "Anonymous") {
 
   let data;
@@ -56,6 +56,71 @@ export async function updateGame(gameId, gameData, score = 0, incQuestionsAnswer
     }
 
     return gameData;
+  }
+  catch (error) {
+    console.log("ERROR: Cannot update the game: ", error);
+    return 0;
+  }
+};
+*/
+
+export async function updatePlayerName(gameId, name) {
+  //Create updated data to be stored in database
+  data = {
+    "player": name,
+    "nameUpdate": true
+  };
+
+  const settings = {
+    method: "PATCH",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  };
+
+  try {
+    let response = await fetch(`${SERVER}/games/${gameId}`, settings);
+    let responseInJson = await response.json();
+
+    if (!responseInJson) {
+      console.log("Cannot update the game: ", responseInJson);
+      return 0;
+    }
+
+    return responseInJson;
+  }
+  catch (error) {
+    console.log("ERROR: Cannot update the game: ", error);
+    return 0;
+  }
+}
+
+export async function updateGame(gameId, answerId) {
+
+  let data;
+  const state = parseInt(localStorage.getItem("gameState"));
+
+  //Create updated data to be stored in database
+  data = {
+    "answerId": answerId,
+    "state": state
+  };
+
+  const settings = {
+    method: "PATCH",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  };
+
+  try {
+    let response = await fetch(`${SERVER}/games/${gameId}`, settings);
+    let responseInJson = await response.json();
+
+    if (!responseInJson) {
+      console.log("Cannot update the game: ", responseInJson);
+      return 0;
+    }
+
+    return responseInJson;
   }
   catch (error) {
     console.log("ERROR: Cannot update the game: ", error);

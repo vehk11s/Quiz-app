@@ -30,6 +30,11 @@ const QUESTION_LIMIT = 10;
 //after the page is loaded reset localStorage and start new game
 window.addEventListener("load", async (event) => {
     //Reset localStorage at reload
+    if(localStorage.getItem('gameId') && localStorage.getItem('gameState') != 0){
+      //create function that gets gameData from backend
+      console.log("restore game from db...");
+    }
+
     await resetGame();
 
     console.log("Quiz app is fully loaded");
@@ -44,21 +49,28 @@ window.addEventListener("load", async (event) => {
 async function startNewGame() {
 
   //get categories from index
-  //const category = document.querySelector('input[name="category"]:checked').value;
   const categories = document.querySelectorAll('input[name="category"]');
 
   let checkedCategory = null;
+  let foundCheckedCategory = null;
 
   for (const category of categories) {
     if (category.checked) {
       checkedCategory = category.value;
+      foundCheckedCategory = true;
     }
   }
 
   //get difficulty from index
   const difficulty = document.querySelector('input[name="difficulty"]:checked').value;
 
-  return await createNewGame(checkedCategory, difficulty);
+  //start new game if category is set properly
+  if ( foundCheckedCategory !== null ){
+    return await createNewGame(checkedCategory, difficulty);
+  }
+
+  await resetGame()
+  return 0;
 }
 
 
@@ -104,8 +116,13 @@ async function gameStateMachine(gameData = null) {
       //start new game phase
       console.log("Starting new game");
 
-      //Put gameData in array
-      gameData = [await startNewGame()];
+      gameData = await startNewGame();
+
+      //check if category was set
+      if (gameData === 0){
+        console.log("Error while running startNewGame: no category selected!");
+        break;
+      }
 
       if ( gameData ) {
         localStorage.setItem("gameState", gameState.QUESTIONS);
@@ -136,7 +153,7 @@ async function gameStateMachine(gameData = null) {
       //ending phase
       //Show points etc ask for new game?
 
-      await drawEndingPhase();
+      await drawEndingPhase(gameData);
 
       const btnMainMenu = document.getElementById("btnMainMenu");
 
@@ -156,38 +173,16 @@ async function gameStateMachine(gameData = null) {
 
 async function updateGameData(answerId, gameId){
   
-  //Update gameData from backend
-  let gameData = await getGameDataById(gameId);
+  const gameData = await updateGame(gameId, answerId);
 
-  let score = 0;
-
-  if (answerId !== undefined){
-    //Todo check if answer is correct.
-    //If it is correct then calculate scores
-    score = 200;
+  if ( gameData === 0 ){
+    //if returns false then we have error occured
+    localStorage.setItem("gameState", gameState.ERROR);
   }
-
-  //Check if answered to 10 questions already. If yes then set gameState to ending 
-  if ( gameData[0].questionsAnswered >= QUESTION_LIMIT - 1 ){
-    console.log("Answered to all questions!: " + parseInt(gameData[0].questionsAnswered + 1))
-    
-    localStorage.setItem("gameState", gameState.ENDING);
+  else{
+    localStorage.setItem("gameState", gameData.state);
   }
-  else
-  {
-    //Update gameData to backend
-    gameData = await updateGame(gameId, gameData, score, true);
-
-    if ( gameData === 0 ){
-      //if returns false then we have error occured
-      localStorage.setItem("gameState", gameState.ERROR);
-    }
-    else{
-      localStorage.setItem("gameState", gameState.QUESTIONS);
-    }
-  }
-
-  gameStateMachine(gameData);
+  gameStateMachine([gameData]);
 }
 
 
@@ -209,7 +204,22 @@ function handleOptionButtonPress(e){
 
 function handleMainMenuButtonPress(e) {
   if (e.key === 'Enter' || e.type === 'mouseup') {
+    
+    //Update player name to database
+    const input = document.getElementById('nameInput');
+    if ( input.value.length > 2){
+      //updatePlayerName(input.value);
+      console.log(input.value);
+    }
+
     resetGame();
+
+    //save player name to local storage if player wants to
+    const storePlayerName = document.getElementById('storeInput');
+    if ( storeInput.checked ){
+      localStorage.setItem('playerName', input.value);
+    }
+
     gameStateMachine();
   }
 };

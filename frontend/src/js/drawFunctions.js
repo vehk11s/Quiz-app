@@ -132,13 +132,13 @@ export async function drawQuestionPhase(gameData) {
     optionButton.classList.add('btn');
     optionButton.classList.add('btn-option');
     optionButton.innerText = `${question.options[index].option}`;
-    optionButton.value = index;
+    optionButton.value = question.options[index]._id;
 
     optionsDiv.appendChild(optionButton);
   }
 }
 
-export async function drawEndingPhase() {
+export async function drawEndingPhase(gameData) {
   //parent id: screen
   const screenDiv = document.getElementById('screen');
 
@@ -161,7 +161,7 @@ export async function drawEndingPhase() {
 
   const finalScore = document.createElement('p');
   finalScore.classList.add('score__final');
-  finalScore.textContent = '3841';
+  finalScore.textContent = gameData[0].score;
 
   scoreDiv.appendChild(scoreText);
   scoreDiv.appendChild(finalScore);
@@ -169,6 +169,9 @@ export async function drawEndingPhase() {
   screenDiv.appendChild(scoreDiv);
 
   // draw inputs for adding and saving username
+
+  const playerName = localStorage.getItem('playerName');
+
   const playerDiv = document.createElement('div');
   playerDiv.classList.add('player');
 
@@ -177,12 +180,24 @@ export async function drawEndingPhase() {
     'Add username to save your score for the leaderboards';
   const nameInput = document.createElement('input');
   nameInput.type = 'text';
+  nameInput.id = 'nameInput';
+
+  if ( playerName ){
+    nameInput.value = playerName;
+  }
+
   nameLabel.insertAdjacentElement('beforeend', nameInput);
 
   const storeLabel = document.createElement('label');
   storeLabel.textContent = 'Remember me';
   const storeInput = document.createElement('input');
   storeInput.type = 'checkbox';
+  storeInput.id = 'storeInput';
+
+  if ( playerName ){
+    storeInput.checked = true;
+  }
+
   storeLabel.insertAdjacentElement('afterbegin', storeInput);
 
   playerDiv.appendChild(nameLabel);

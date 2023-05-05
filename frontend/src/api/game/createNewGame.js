@@ -1,4 +1,8 @@
+import { getGameDataById } from './updateGame.js';
+
 const SERVER = "http://127.0.0.1:3000";
+
+
 
 /*
   Creates new game with given arguments and stores new game id got from backend to localStorage.
@@ -30,9 +34,16 @@ export async function createNewGame(category, difficulty) {
     const responseInJson = await response.json();
 
     //save game id to localStorage for later use
-    localStorage.setItem("gameId", responseInJson.id);
+    localStorage.setItem("gameId", responseInJson.insertedId);
 
-    return responseInJson;
+    const gameData = await getGameDataById(responseInJson.insertedId);
+
+    //if error while fetching gamedata
+    if(gameData === 0){
+      return 0;
+    }
+
+    return await gameData
   }
   catch (error) {
     console.log("ERROR: cannot create new game: ", error);
