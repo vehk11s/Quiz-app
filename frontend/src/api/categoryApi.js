@@ -78,7 +78,7 @@ export async function deleteCategory(id) {
 
   try {
     let response = await fetch(url + id, settings);
-    const deletedCategory = await response.json();
+    const deletedCategory = await response;
 
     console.log(id + 'deleted');
     return deletedCategory;
