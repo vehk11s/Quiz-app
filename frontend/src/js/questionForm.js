@@ -13,6 +13,7 @@ import {
   createBtn,
   createDiv,
 } from './formHelpers.js';
+import { drawMessage } from './message.js';
 
 let visibleQuestions = 1; // Tracks the visible question sets on display, used for dynamical indexing
 let totalQuestions = 1; // Doesn't decrease when removing a question, used for element ids
@@ -24,6 +25,26 @@ If editing an existing question, the Edit-button sends an ID parameter to the fu
 this parameter to find the correct question and adjusts the form elements correctly.
 */
 
+/* const handleModal = () => {
+  const modal = document.querySelector('dialog');
+
+  if (modal.open) {
+    modal.close();
+  } else {
+    modal.showModal();
+  }
+}; */
+
+export const handleModal = () => {
+  const modal = document.querySelector('dialog');
+
+  if (modal.open) {
+    modal.close();
+  } else {
+    modal.showModal();
+  }
+};
+
 export async function drawForm(id) {
   // Find the dialog element and clear it from possible content
   const modal = document.querySelector('dialog');
@@ -33,20 +54,34 @@ export async function drawForm(id) {
   let formTitle = 'Add question';
   let question;
 
-  // Change form title and save the full question in a variable
+  // Draw instructions
+  let formInfo = document.createElement('p');
+  formInfo.textContent =
+    'Currently only multichoice questions can be added. All fields are required and a question may have only one correct answer. All questions saved within the same form must all belong in same category.';
+
+  // Change form title + info and save the full question in a variable
   if (id) {
     formTitle = 'Edit question';
     question = await getQuestion(id);
+    formInfo.textContent = 'All fields are required.';
   }
 
-  // Start creating the form
+  // Draw form
   const form = createForm('question_form', formTitle);
+  form.appendChild(formInfo);
 
-  const categories = createFieldset();
-  categories.classList.add('categories');
+  // Draw categories
+  const categorySet = createFieldset();
+  categorySet.classList.add('categories');
+
+  const categoryLegend = document.createElement('legend');
+  categoryLegend.textContent = 'Select category';
+
+  categorySet.appendChild(categoryLegend);
 
   // Fetch categories and set the radio button group dynamically
   const data = await getCategories();
+
   data.forEach((category) => {
     const { category: name, id } = category;
 
@@ -63,10 +98,10 @@ export async function drawForm(id) {
     label.appendChild(input);
     label.insertAdjacentText('beforeend', name);
 
-    categories.appendChild(label);
+    categorySet.appendChild(label);
   });
 
-  form.appendChild(categories);
+  form.appendChild(categorySet);
 
   const formContent = createDiv('form__content');
   const formFooter = createDiv('form__footer');
@@ -92,8 +127,8 @@ export async function drawForm(id) {
   // Submit button is added to both forms
   const submitBtn = createBtn('Save');
   submitBtn.classList.add('btn-primary');
-  submitBtn.addEventListener('click', (e) => {
-    handleSubmit(id, e);
+  submitBtn.addEventListener('click', () => {
+    handleSubmit(id);
   });
 
   formFooter.appendChild(submitBtn);
@@ -138,6 +173,7 @@ function drawQuestion(question) {
 
   const questionLabel = createLabel(`Q${totalQuestions}`, 'Question');
   const questionInput = createInput(`Q${totalQuestions}`);
+  questionInput.minLength = '10';
 
   // Set default value for editing form
   if (question) {
@@ -204,6 +240,10 @@ function drawOptions(question) {
       `Q${totalQuestions}-correct`
     );
 
+    if (optionNum != 1) {
+      validInput.required = false;
+    }
+
     // Set default values for editing form
     if (question) {
       optionInput.value = question.options[optionNum - 1].option;
@@ -246,8 +286,10 @@ function handleRemove(e) {
 }
 
 // Handles both saving new questions and updating an existing question
-function handleSubmit(id, e) {
-  e.preventDefault();
+async function handleSubmit(id) {
+  let response;
+  let hasErrors;
+
   // Get selected category id
   const category = document.querySelector(
     'input[name="category"]:checked'
@@ -266,11 +308,24 @@ function handleSubmit(id, e) {
 
       const questionInput = document.querySelector(`#Q${questionNum}`);
 
+      // Manual validation of radio buttons to ensure that at least one of them is true
+      const valids = Array.from(questionSet.querySelectorAll("[id*='-valid']"));
+      let values = [];
+
+      valids.forEach((item) => {
+        values.push(item.checked);
+      });
+
+      if (values.every((val) => val === false)) {
+        hasErrors = true;
+      }
+
       // Select all corresponding options sets inside parent
       for (let optionNum = 1; optionNum <= AMT_OF_OPTIONS; optionNum++) {
         const optionSets = questionSet.querySelectorAll(
           `[id^='${questionNum}O${optionNum}']`
         );
+
         questionOptions.push({
           option: optionSets[0].value,
           isCorrect: optionSets[1].checked,
@@ -285,7 +340,9 @@ function handleSubmit(id, e) {
       newQuestions.push(newQuestion);
     });
 
-    postQuestion(newQuestions);
+    if (!hasErrors) {
+      response = await postQuestion(newQuestions);
+    }
   } else {
     const questionField = document.querySelector('#Q1');
     const options = [];
@@ -311,8 +368,20 @@ function handleSubmit(id, e) {
       category: category,
     };
 
-    updateQuestion(updatedQuestion, id);
+    response = await updateQuestion(updatedQuestion, id);
   }
+
+  if (!hasErrors) {
+    handleStatus(response);
+  }
+}
+
+// Keep dialog open if an error occurred
+function handleStatus(response) {
+  if (response.status === 200) {
+    handleModal();
+  }
+  drawMessage(response);
 }
 
 export function createRemoveBtn() {

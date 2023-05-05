@@ -2,6 +2,7 @@ import { getQuestions, deleteQuestion } from '../api/questionApi.js';
 import { getCategories } from '../api/categoryApi.js';
 import { drawForm } from './questionForm.js';
 import { categoryForm, categoryDeleting } from './categoryForm.js';
+import { drawMessage } from './message.js';
 
 /* 
 Runs when the page is refreshed. 

@@ -21,7 +21,7 @@ export const postQuestion = async (data) => {
     body: JSON.stringify(data),
   });
 
-  return response.json();
+  return formatResponse(response, 'PATCH', 'Question(s) saved successfully!');
 };
 
 export const updateQuestion = async (data, id) => {
@@ -31,7 +31,7 @@ export const updateQuestion = async (data, id) => {
     body: JSON.stringify(data),
   });
 
-  return response.json();
+  return formatResponse(response, 'PATCH', 'Question updated successfully!');
 };
 
 export const deleteQuestion = async (id) => {
@@ -39,6 +39,21 @@ export const deleteQuestion = async (id) => {
     method: 'DELETE',
   });
 
-  console.log(id + ' deleted');
-  return response.json();
+  return formatResponse(response, 'DEL', 'Question deleted successfully!');
+};
+
+
+// Handles keeping responses in same format for easier message handling
+const formatResponse = async (response, method, success) => {
+  const res = { method: method, status: response.status, message: '' };
+
+  if (response.ok) {
+    res.message = success;
+  } else {
+    const errors = await response.json();
+    const errorMessage = Object.values(errors)[0].msg;
+    res.message = errorMessage;
+  }
+
+  return res;
 };
