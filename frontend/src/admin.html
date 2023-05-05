@@ -8,6 +8,65 @@
 
     <link rel="stylesheet" href="./styles/style.css" />
     <link rel="stylesheet" href="./styles/admin.css" />
+
+    <style>
+      body {
+        display: grid;
+        align-items: start;
+        grid-template-rows: auto 1fr;
+        grid-template-columns: auto 1fr;
+      }
+
+      header {
+        grid-area: 1 / 1 / 1 / 3;
+      }
+
+      aside {
+        display: inline-flex;
+        flex: 0 0 0;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 2rem;
+        height: 100%;
+        width: 15rem;
+        min-width: fit-content;
+        grid-area: 2 / 1 / 3 / 1;
+      }
+
+      section {
+        padding: 2rem;
+        grid-area: 2 / 2 / 3 / 3;
+        overflow: auto;
+        height: 100%;
+        border-top: 1px solid black;
+        border-left: 1px solid black;
+      }
+
+      ul {
+        display: inline-flex;
+        flex-direction: column;
+        list-style: none;
+      }
+
+      .btn-list {
+        width: 100%;
+        border: none;
+        border-radius: 0;
+        background-color: transparent;
+        text-align: start;
+        padding-inline: 8px;
+      }
+
+      .btn-list:hover {
+        background-color: var(--primary-pink-subtle);
+      }
+
+      #add-btns {
+        display: inline-flex;
+        gap: 0.5rem;
+        flex-direction: column;
+      }
+    </style>
   </head>
 
   <body>
@@ -33,12 +92,29 @@
       </nav>
     </header>
 
-    <div id="main-nav" class="row">
-      <button id="category-btn" class="btn btn-primary">Categories</button>
-      <button id="question-btn" class="btn btn-primary">Questions</button>
-    </div>
+    <aside>
+      <nav class="nav nav-side">
+        <ul class="nav-categories">
+          <p class="lg">Categories</p>
+        </ul>
+      </nav>
 
-    <section></section>
+      <div id="add-btns">
+        <button id="category-btn" class="btn btn-primary btn-sm">
+          Add Category
+        </button>
+        <button id="question-btn" class="btn btn-primary btn-sm">
+          Add Question
+        </button>
+      </div>
+    </aside>
+
+    <section>
+      <div class="section__header">
+        <h1></h1>
+      </div>
+      <div class="section__content"></div>
+    </section>
 
     <dialog class="modal" closed>
       <button id="close-modal" class="btn btn-secondary">Close</button>
