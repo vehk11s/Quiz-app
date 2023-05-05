@@ -130,8 +130,11 @@ function listQuestions(questions, selectedCategory) {
       listFooter.classList.add('row', 'list__footer');
 
       const delBtn = createBtn('delete', '', element.id);
-      delBtn.addEventListener('click', (e) => {
-        deleteQuestion(e.target.value);
+      delBtn.addEventListener('click', async (e) => {
+        if (confirm('Delete question?')) {
+          const response = await deleteQuestion(e.target.value);
+          drawMessage(response);
+        }
       });
 
       const editBtn = createBtn('edit', '', element.id);
