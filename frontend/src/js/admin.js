@@ -2,6 +2,7 @@ import { getQuestions, deleteQuestion } from '../api/questionApi.js';
 import { getCategories } from '../api/categoryApi.js';
 import { drawForm } from './questionForm.js';
 import { categoryForm, categoryDeleting } from './categoryForm.js';
+import { drawMessage } from './message.js';
 
 let categoryBtn = document.querySelector('#category-btn');
 let questionBtn = document.querySelector('#question-btn');
@@ -38,7 +39,8 @@ function init(location) {
       break;
     case 'categories':
       title.textContent = 'Categories';
-      text.textContent = 'All categories listed. You can add new from the button below.';
+      text.textContent =
+        'All categories listed. You can add new from the button below.';
       break;
     default:
       title.textContent = 'Admin';
@@ -49,6 +51,8 @@ function init(location) {
   section.appendChild(title);
   section.appendChild(text);
 
+  // Questions
+  // Draw Add New Questions -button
   if (location === 'questions') {
     const button = document.createElement('button');
     button.classList.add('btn', 'btn-primary');
@@ -114,25 +118,25 @@ function setListeners() {
   buttons.forEach((button) => {
     button.addEventListener('click', async () => {
       const questions = await getQuestions({ category: button.id });
-      createContent(questions);
+      listQuestions(questions);
     });
   });
 }
 
-function createContent(elements) {
+function listQuestions(questions) {
   const section = document.querySelector('section');
   section.innerHTML = ''; // Remove content
 
   const list = document.createElement('ol'); // Main listing
 
-  elements.forEach((element) => {
+  questions.forEach((question) => {
     const questionItem = document.createElement('li');
-    questionItem.textContent = element.question;
+    questionItem.textContent = question.question;
     questionItem.classList.add('list__question');
 
     const optionsList = document.createElement('ol');
 
-    element.options.forEach((option) => {
+    question.options.forEach((option) => {
       const optionItem = document.createElement('li');
 
       if (option.isCorrect) {
@@ -149,12 +153,17 @@ function createContent(elements) {
     const listFooter = document.createElement('div');
     listFooter.classList.add('row', 'list__footer');
 
-    const delBtn = createBtn('delete', element.id);
-    delBtn.addEventListener('click', (e) => {
-      deleteQuestion(e.target.value);
+    // Draw Delete Question -button
+    const delBtn = createBtn('delete', question.id);
+    delBtn.addEventListener('click', async (e) => {
+      if (confirm('Delete question?')) {
+        const response = await deleteQuestion(e.target.value);
+        drawMessage(response);
+      }
     });
 
-    const editBtn = createBtn('edit', element.id);
+    // Draw Edit Question -button
+    const editBtn = createBtn('edit', question.id);
     editBtn.addEventListener('click', (e) => {
       drawForm(e.target.value);
     });
@@ -195,7 +204,7 @@ async function listCategories() {
 
   const categories = await getCategories();
 
-  categories.forEach(function(object){
+  categories.forEach(function (object) {
     const categoryItem = document.createElement('li');
 
     categoryItem.textContent = object.category;
@@ -220,6 +229,5 @@ async function listCategories() {
     categoryItem.appendChild(listFooter);
     list.appendChild(categoryItem);
     section.appendChild(list);
-
   });
 }

@@ -4,6 +4,10 @@ form {
   gap: 1rem;
 }
 
+form > p.xl + p {
+  margin-top: -1.5rem;
+}
+
 .categories {
   display: grid;
   gap: 0.5rem;
@@ -118,8 +122,50 @@ dialog::backdrop {
   border-bottom: 2px solid var(--primary-pink-light);
 }
 
-p
-{
+p {
   padding-top: 0.5rem;
   padding-bottom: 1rem;
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-block: 1rem;
+  align-items: center;
+  width: 100%;
+  place-content: center;
+  position: fixed;
+  bottom: -100%;
+  animation: showMessage 4s ease-in-out;
+}
+
+.message p {
+  padding: 0;
+}
+
+@keyframes showMessage {
+  0% {
+    bottom: -100%;
+  }
+
+  10% {
+    bottom: 0;
+  }
+
+  90% {
+    bottom: 0;
+  }
+
+  100% {
+    bottom: -100%;
+  }
+}
+
+.msg-success {
+  background-color: var(--quiz-correct);
+}
+
+.msg-error {
+  background-color: var(--quiz-incorrect);
 }
