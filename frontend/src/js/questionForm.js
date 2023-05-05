@@ -25,16 +25,6 @@ If editing an existing question, the Edit-button sends an ID parameter to the fu
 this parameter to find the correct question and adjusts the form elements correctly.
 */
 
-/* const handleModal = () => {
-  const modal = document.querySelector('dialog');
-
-  if (modal.open) {
-    modal.close();
-  } else {
-    modal.showModal();
-  }
-}; */
-
 export const handleModal = () => {
   const modal = document.querySelector('dialog');
 
