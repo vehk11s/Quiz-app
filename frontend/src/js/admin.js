@@ -14,10 +14,16 @@ window.addEventListener('load', async () => {
   const categories = await getCategories();
   const location = window.location.hash.substring(1);
 
-  // Find the category that was selected before load
+  // Use hash to reload back to the right category
   const selectedCategory = categories.find(
-    (category) => category.category.toLowerCase() === location
+    (category) => category.id === location
   );
+
+  // If user hasnt selected a category or it's deleted, relocate to admin index
+  if (!selectedCategory) {
+    window.location.hash = '';
+    history.replaceState('', '', window.location.pathname);
+  }
 
   drawSidebar(categories);
   drawContent(selectedCategory);
@@ -39,7 +45,7 @@ async function drawSidebar(categories) {
     btn.textContent = category.category;
 
     btn.addEventListener('click', async () => {
-      window.location.hash = btn.textContent.toLowerCase();
+      window.location.hash = btn.id;
       const questions = await getQuestions({ category: btn.id });
       listQuestions(questions, category);
     });

@@ -1,8 +1,8 @@
-import { 
+import {
   getCategory,
   postCategory,
   updateCategory,
-  deleteCategory
+  deleteCategory,
 } from '../api/categoryApi.js';
 import {
   createForm,
@@ -13,12 +13,21 @@ import {
   createBtn,
   createDiv,
 } from './formHelpers.js';
-import {
-  getQuestions,
-} from '../api/questionApi.js';
+import { getQuestions } from '../api/questionApi.js';
 
 let visibleCategories = 1;
 let totalCategories = 1;
+
+// Duplicate function, needs to be moved elsewhere when everything works
+export const handleModal = () => {
+  const modal = document.querySelector('dialog');
+
+  if (modal.open) {
+    modal.close();
+  } else {
+    modal.showModal();
+  }
+};
 
 export async function categoryForm(id) {
   // Find the dialog element and clear it from possible content
@@ -43,8 +52,7 @@ export async function categoryForm(id) {
   form.appendChild(formContent);
   form.appendChild(formFooter);
 
-  if (!id)
-  {
+  if (!id) {
     const addBtn = createBtn('Add category');
     addBtn.classList.add('btn-primary');
 
@@ -65,17 +73,17 @@ export async function categoryForm(id) {
   submitBtn.addEventListener('click', () => {
     handleSubmit(id);
   });
-  
+
   formFooter.appendChild(submitBtn);
   form.appendChild(formFooter);
-  
+
   // Append the full form and then open dialog
   modalContent.appendChild(form);
   modal.showModal();
-  
+
   drawCategory(category);
   updateIndexing();
-  
+
   const closeBtn = document.querySelector('#close-modal');
   closeBtn.addEventListener('click', () => {
     modalContent.innerHTML = '';
@@ -83,21 +91,21 @@ export async function categoryForm(id) {
   });
 }
 
-function drawCategory(category){
+function drawCategory(category) {
   const form = document.querySelector('.form__content');
 
   const categorySet = createFieldset();
   categorySet.classList.add('form__category');
   categorySet.id = `C${totalCategories}-group`;
 
-    // Prevent removing all question sets from the form
-    if (visibleCategories > 1) {
-      const btn = createRemoveBtn();
-      btn.addEventListener('click', (e) => {
-        handleRemove(e);
-      });
-      categorySet.appendChild(btn);
-    }
+  // Prevent removing all question sets from the form
+  if (visibleCategories > 1) {
+    const btn = createRemoveBtn();
+    btn.addEventListener('click', (e) => {
+      handleRemove(e);
+    });
+    categorySet.appendChild(btn);
+  }
 
   const categoryLegend = createLegend(`${visibleCategories}. Category`);
   categorySet.appendChild(categoryLegend);
@@ -115,9 +123,7 @@ function drawCategory(category){
   categorySet.appendChild(categoryLabel);
 
   form.appendChild(categorySet);
-
-};
-
+}
 
 // When user removes a category from the form, handleRemove finds the parent fieldset and removes all elements
 function handleRemove(e) {
@@ -131,10 +137,9 @@ function handleRemove(e) {
 
 // Handles both saving new category and updating an existing category
 function handleSubmit(id) {
-  if (!id)
-  {
+  if (!id) {
     // Define new array for the categories
-    const newCategories = []; 
+    const newCategories = [];
 
     // Select each category set by class name
     const categorySets = document.querySelectorAll('.form__category');
@@ -142,20 +147,18 @@ function handleSubmit(id) {
     categorySets.forEach((categorySet) => {
       // Get category number
       const categoryNum = categorySet.id.slice(1, 2);
-      
+
       const categoryInput = document.querySelector(`#C${categoryNum}`);
-      
+
       const newCategory = {
-        category: categoryInput.value
+        category: categoryInput.value,
       };
       console.log(newCategory);
       newCategories.push(newCategory);
     });
     console.log(newCategories);
     postCategory(newCategories);
-  }
-  else
-  {
+  } else {
     const categoryField = document.querySelector('#C1');
 
     const updatedCategory = {
@@ -165,7 +168,7 @@ function handleSubmit(id) {
 
     updateCategory(updatedCategory, id);
   }
-};
+}
 
 /* When deleting a category, check if there is questions in it. If yes, ask user "are you sure" 
 and then delete all the questions in that category and finally the category itself. If there is not questions
@@ -181,9 +184,8 @@ export async function categoryDeleting(id) {
 
   let formTitle = 'Delete ' + category.category + '?';
 
-  const questions = await getQuestions({ category: id});
+  const questions = await getQuestions({ category: id });
   const questionsAmount = Object.keys(questions).length;
-
 
   // Start creating the form
   const form = createForm('deleteCategory_form', formTitle);
@@ -191,8 +193,11 @@ export async function categoryDeleting(id) {
   const formContent = createDiv('form__content');
 
   const text = document.createElement('p');
-  text.textContent = 'There is ' + questionsAmount + ' questions in this category. If you delete it, these questions will be deleted also.'
-  
+  text.textContent =
+    'There is ' +
+    questionsAmount +
+    ' questions in this category. If you delete it, these questions will be deleted also.';
+
   formContent.appendChild(text);
 
   const formFooter = createDiv('form__footer');
@@ -203,23 +208,23 @@ export async function categoryDeleting(id) {
   button.classList.add('btn-primary');
   button.addEventListener('click', () => {
     deleteCategory(id);
+    handleModal();
+    window.location.reload();
   });
-
 
   formFooter.appendChild(button);
   form.appendChild(formFooter);
-  
+
   // Append the full form and then open dialog
   modalContent.appendChild(form);
   modal.showModal();
-  
+
   const closeBtn = document.querySelector('#close-modal');
   closeBtn.addEventListener('click', () => {
     modalContent.innerHTML = '';
     modal.close();
   });
-};
-
+}
 
 export function createRemoveBtn() {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
