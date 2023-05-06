@@ -172,7 +172,7 @@ function listQuestions(questions, selectedCategory) {
   }
 }
 
-// Handles removing the questions from listig without forcing a full page refresh
+// Handles removing the questions from listing without forcing a full page refresh
 function removeVisually(id) {
   const parent = document.getElementById('question-list');
   const removable = document.getElementById(id);

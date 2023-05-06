@@ -118,8 +118,7 @@ export async function drawForm(id) {
   // Submit button is added to both forms
   const submitBtn = createBtn('Save');
   submitBtn.classList.add('btn-primary');
-  submitBtn.addEventListener('click', (e) => {
-    e.preventDefault();
+  submitBtn.addEventListener('click', () => {
     handleSubmit(id);
   });
 

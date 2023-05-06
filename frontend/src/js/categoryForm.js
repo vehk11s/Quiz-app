@@ -16,7 +16,6 @@ import {
 } from './formHelpers.js';
 import { getQuestions } from '../api/questionApi.js';
 import { drawContent } from './admin.js';
-import { drawMessage } from './message.js';
 
 let visibleCategories = 1;
 let totalCategories = 1;
@@ -56,7 +55,7 @@ export async function categoryForm(id) {
   form.appendChild(formFooter);
 
   if (!id) {
-    const addBtn = createBtn('Add category');
+    const addBtn = createBtn('Add another');
     addBtn.classList.add('btn-primary');
 
     addBtn.addEventListener('click', (e) => {
@@ -220,7 +219,8 @@ export async function categoryDeleting(id) {
   button.classList.add('btn-primary');
   button.addEventListener('click', async () => {
     await deleteCategory(id);
-    drawContent();
+    window.location.hash = '';
+    history.replaceState('', '', window.location.pathname);
     handleModal();
   });
 
