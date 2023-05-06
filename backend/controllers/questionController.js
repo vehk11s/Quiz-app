@@ -37,7 +37,7 @@ exports.get_questions = [
 ];
 
 // GET quiz version of questions
-export const getQuizQuestions = async (category) => {
+exports.getQuizQuestions = async (category) => {
   let categoryId = new mongoose.Types.ObjectId(category);
 
   const questions = await Question.aggregate([
