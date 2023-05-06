@@ -1,4 +1,4 @@
-import { categoryButtons } from '../api/categoryApi.js';
+import { drawCategoryButtons } from './categorySelection.js';
 import { getNextQuestion } from '../api/game/getNextQuestion.js';
 
 /*
@@ -45,7 +45,7 @@ export async function drawIndexPage() {
   //draw categories
 
   //getCategories from db
-  await categoryButtons();
+  await drawCategoryButtons();
 
   //draw difficulty
 
