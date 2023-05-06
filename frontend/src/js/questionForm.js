@@ -118,6 +118,7 @@ export async function drawForm(id) {
   // Submit button is added to both forms
   const submitBtn = createBtn('Save');
   submitBtn.classList.add('btn-primary');
+  submitBtn.type = 'button';
   submitBtn.addEventListener('click', () => {
     handleSubmit(id);
   });
@@ -282,9 +283,14 @@ async function handleSubmit(id) {
   let hasErrors;
 
   // Get selected category id
-  const category = document.querySelector(
+  const selectedCategory = document.querySelector(
     'input[name="category"]:checked'
-  ).value;
+  );
+
+  const category = {
+    category: selectedCategory.id,
+    id: selectedCategory.value,
+  };
 
   if (!id) {
     // Define new array for the questions
@@ -326,7 +332,7 @@ async function handleSubmit(id) {
       const newQuestion = {
         question: questionInput.value,
         options: questionOptions,
-        category: category,
+        category: category.id,
       };
       newQuestions.push(newQuestion);
     });
@@ -356,7 +362,7 @@ async function handleSubmit(id) {
       id: id,
       question: questionField.value,
       options: options,
-      category: category,
+      category: category.id,
     };
 
     response = await updateQuestion(updatedQuestion, id);
@@ -364,7 +370,7 @@ async function handleSubmit(id) {
 
   if (!hasErrors) {
     handleStatus(response);
-    drawContent()
+    drawContent(category);
   }
 }
 
