@@ -2,6 +2,12 @@ import { categoryButtons } from '../api/categoryApi.js';
 import { getNextQuestion } from '../api/game/getNextQuestion.js';
 
 /*
+  TODO: Div or other common place for all errors, warnings and user messages
+*/
+
+
+
+/*
   Draws the starting phase of the game where player can select category, difficulty etc.
 */
 export async function drawIndexPage() {
@@ -105,39 +111,90 @@ export async function drawQuestionPhase(gameData) {
 
   //Get next question
   let question = await getNextQuestion(gameData);
+  console.log(question);
 
-  //set title
-  const title = document.createElement('p');
-  title.classList.add('title');
-  title.innerText = question.category[0].category;
+  //If category does not have any questions tell player about that and draw Quit game -button
+  if ( question === 0 ){
 
-  screenDiv.appendChild(title);
+    //set title
+    const title = document.createElement('p');
+    title.classList.add('title');
+    title.innerText = "This category does not have any questions!";
 
-  //draw question as a title?
-  const questionNumber = parseInt(gameData[0].questionsAnswered + 1);
+    screenDiv.appendChild(title);
 
-  const questionP = document.createElement('p');
-  questionP.classList.add('lg');
-  questionP.innerText = `${questionNumber}. ${question.question}`;
 
-  screenDiv.appendChild(questionP);
+    //draw buttons
+    const buttonsDiv = document.createElement('div');
+    buttonsDiv.classList.add('buttons');
 
-  //draw option buttons
+    screenDiv.appendChild(buttonsDiv);
 
-  const optionsDiv = document.createElement('div');
-  optionsDiv.classList.add('options');
+    // draw quitGameButton to return to main menu
+    const quitGameButton = document.createElement('button');
+    quitGameButton.classList.add('btn', 'btn-secondary');
+    quitGameButton.textContent = 'Quit game';
+    quitGameButton.id = 'btnQuitGame';
 
-  screenDiv.appendChild(optionsDiv);
-
-  for (let index = 0; index < question.options.length; index++) {
-    const optionButton = document.createElement('button');
-    optionButton.classList.add('btn');
-    optionButton.classList.add('btn-option');
-    optionButton.innerText = `${question.options[index].option}`;
-    optionButton.value = question.options[index]._id;
-
-    optionsDiv.appendChild(optionButton);
+    buttonsDiv.appendChild(quitGameButton);
   }
+  else{
+
+    //set title
+    const title = document.createElement('p');
+    title.classList.add('title');
+    title.innerText = question.category[0].category;
+
+    screenDiv.appendChild(title);
+
+    //draw question as a title?
+    const questionNumber = parseInt(gameData[0].questionsAnswered + 1);
+
+    const questionP = document.createElement('p');
+    questionP.classList.add('lg');
+    questionP.innerText = `${questionNumber}. ${question.question}`;
+
+    screenDiv.appendChild(questionP);
+
+    //draw option buttons
+
+    const optionsDiv = document.createElement('div');
+    optionsDiv.classList.add('options');
+
+    screenDiv.appendChild(optionsDiv);
+
+    for (let index = 0; index < question.options.length; index++) {
+      const optionButton = document.createElement('button');
+      optionButton.classList.add('btn');
+      optionButton.classList.add('btn-option');
+      optionButton.innerText = `${question.options[index].option}`;
+      optionButton.value = question.options[index]._id;
+
+      optionsDiv.appendChild(optionButton);
+    }
+  
+
+  //draw buttons
+  const buttonsDiv = document.createElement('div');
+  buttonsDiv.classList.add('buttons');
+
+  screenDiv.appendChild(buttonsDiv);
+
+  // draw quitGameButton to return to main menu
+  const quitGameButton = document.createElement('button');
+  quitGameButton.classList.add('btn', 'btn-secondary');
+  quitGameButton.textContent = 'Quit game';
+  quitGameButton.id = 'btnQuitGame';
+
+  // draw skipToEndButton to skip to end of the game
+  const skipToEndButton = document.createElement('button');
+  skipToEndButton.classList.add('btn', 'btn-primary');
+  skipToEndButton.textContent = 'Skip to end';
+  skipToEndButton.id = 'btnSkipToEnd';
+
+  buttonsDiv.appendChild(quitGameButton);
+  buttonsDiv.appendChild(skipToEndButton);
+}
 }
 
 export async function drawEndingPhase(gameData) {
