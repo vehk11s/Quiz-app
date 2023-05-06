@@ -14,6 +14,7 @@ import {
   createDiv,
 } from './formHelpers.js';
 import { drawMessage } from './message.js';
+import { drawContent } from './admin.js';
 
 let visibleQuestions = 1; // Tracks the visible question sets on display, used for dynamical indexing
 let totalQuestions = 1; // Doesn't decrease when removing a question, used for element ids
@@ -100,7 +101,7 @@ export async function drawForm(id) {
 
   // If the form is created for new questions, add a button for adding question sets
   if (!id) {
-    const addBtn = createBtn('Add question');
+    const addBtn = createBtn('Add another');
     addBtn.classList.add('btn-primary');
 
     addBtn.addEventListener('click', (e) => {
@@ -117,6 +118,7 @@ export async function drawForm(id) {
   // Submit button is added to both forms
   const submitBtn = createBtn('Save');
   submitBtn.classList.add('btn-primary');
+  submitBtn.type = 'button';
   submitBtn.addEventListener('click', () => {
     handleSubmit(id);
   });
@@ -281,9 +283,14 @@ async function handleSubmit(id) {
   let hasErrors;
 
   // Get selected category id
-  const category = document.querySelector(
+  const selectedCategory = document.querySelector(
     'input[name="category"]:checked'
-  ).value;
+  );
+
+  const category = {
+    category: selectedCategory.id,
+    id: selectedCategory.value,
+  };
 
   if (!id) {
     // Define new array for the questions
@@ -325,7 +332,7 @@ async function handleSubmit(id) {
       const newQuestion = {
         question: questionInput.value,
         options: questionOptions,
-        category: category,
+        category: category.id,
       };
       newQuestions.push(newQuestion);
     });
@@ -355,7 +362,7 @@ async function handleSubmit(id) {
       id: id,
       question: questionField.value,
       options: options,
-      category: category,
+      category: category.id,
     };
 
     response = await updateQuestion(updatedQuestion, id);
@@ -363,6 +370,7 @@ async function handleSubmit(id) {
 
   if (!hasErrors) {
     handleStatus(response);
+    drawContent(category);
   }
 }
 
