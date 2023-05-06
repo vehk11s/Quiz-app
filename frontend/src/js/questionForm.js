@@ -101,7 +101,7 @@ export async function drawForm(id) {
 
   // If the form is created for new questions, add a button for adding question sets
   if (!id) {
-    const addBtn = createBtn('Add question');
+    const addBtn = createBtn('Add another');
     addBtn.classList.add('btn-primary');
 
     addBtn.addEventListener('click', (e) => {
