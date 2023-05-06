@@ -19,8 +19,8 @@ const gameState = {
   INDEX: 4
 };
 
-//15min = 900min = 54000sec = 54 000 000ms
-const RUN_DELETE_GAMES_DELAY_MS = 54000000;
+//15min = 900 000 ms
+const RUN_DELETE_GAMES_DELAY_MS = 900000;
 
 
 //1h in ms
