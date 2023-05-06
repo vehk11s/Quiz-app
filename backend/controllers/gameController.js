@@ -200,7 +200,6 @@ exports.update_game = async function (req, res) {
 
   if ( param.nameUpdate ){
     //update only players name
-    console.log("Name: " + param.player);
     updateData = {
       "player": param.player,
     };
