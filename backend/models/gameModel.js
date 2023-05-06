@@ -19,6 +19,7 @@ const gameSchema = new Schema(
     category: { type: Schema.Types.ObjectId, ref: 'Category' },
     questions: [{ type: Schema.Types.ObjectId, ref: 'Question' }],
     questionsAnswered: { type: Number, default: 0 },
+    state: { type: Number, default: 1 },
   },
   { timestamps: true }
 );

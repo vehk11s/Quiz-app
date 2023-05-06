@@ -36,66 +36,61 @@ exports.get_questions = [
   },
 ];
 
-// GET quiz version of questions
-exports.getQuizQuestions = async (category) => {
-  let categoryId = new mongoose.Types.ObjectId(category);
+// GET quiz version of question by id
 
-  const questions = await Question.aggregate([
-    {
-      $match: {
-        $and: [
-          {
-            category: categoryId,
-          },
-          {
+exports.getQuizQuestion = [
+  param('id', 'Invalid question id')
+    .exists()
+    .isMongoId()
+    .custom((val) => Question.isValidQuestion(val)),
+
+    
+  async function (req, res) {
+    try {
+      validationResult(req).throw();
+
+      let questionId = new mongoose.Types.ObjectId(req.params.id);
+/*          
+          },*/
+      await Question.aggregate([
+        {
+          $match: { 
+            _id: questionId,
             options: {
               $elemMatch: {
                 isCorrect: true,
               },
             },
           },
-        ],
-      },
-    },
-    {
-      $sample: {
-        size: 10,
-      },
-    },
-    {
-      $lookup: {
-        from: 'categories',
-        localField: 'category',
-        foreignField: '_id',
-        as: 'category',
-      },
-    },
-  ]);
 
-  // Define array for the questions
-  const quizQuestions = [];
+        },
+      ])
+      .then((result) => {
 
-  // Loop each returned question
-  questions.forEach((question) => {
-    let values = question.options;
+        let values = result[0].options;
+        
+        // Remove isCorrect
+        result[0].options.forEach((opt) => {
+          delete opt.isCorrect;
+        });
 
-    // Remove isCorrect
-    values.forEach((opt) => {
-      delete opt.isCorrect;
-    });
-    // Shuffle array
-    values = values.sort(() => 0.5 - Math.random());
+        // Shuffle array
+        values = values.sort(() => 0.5 - Math.random());
 
-    // Replace values
-    question['options'] = values;
-    question['category'] = question.category[0];
+        // Replace values
+        result[0]['options'] = values;
 
-    // Push new object to array
-    quizQuestions.push(question);
-  });
+        res.status(200).json(result[0]);
+      })
+      .catch((error) => {
+        res.send(error);
+      });
+  } catch (error) {
+    res.status(400).send(error.mapped());
+  }
+  },
+];
 
-  return quizQuestions;
-};
 
 // GET single question by id
 exports.get_question = [
