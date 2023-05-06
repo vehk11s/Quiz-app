@@ -19,15 +19,6 @@ export const drawMessage = (response) => {
   messageText.textContent = message;
   messageDiv.appendChild(messageText);
 
-  // Add extra info if page needs refreshing
-  if (status === 200) {
-    if (method === 'DEL' || method === 'PATCH') {
-      const text = document.createElement('p');
-      text.textContent = 'Update page to see changes';
-      messageDiv.appendChild(text);
-    }
-  }
-
   displayMessage(messageDiv);
 };
 

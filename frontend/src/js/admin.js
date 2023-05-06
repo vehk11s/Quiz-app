@@ -25,7 +25,6 @@ window.addEventListener('load', async () => {
     history.replaceState('', '', window.location.pathname);
   }
 
-  drawSidebar(categories);
   drawContent(selectedCategory);
 });
 
@@ -35,6 +34,15 @@ Draws sidebar, category nav and control buttons for adding new categories and qu
 async function drawSidebar(categories) {
   const sidebar = document.querySelector('aside');
   const categoryList = sidebar.querySelector('.nav-categories');
+
+  // Remove previous content
+  categoryList.innerHTML = '';
+
+  const title = document.createElement('p');
+  title.classList.add('lg');
+  title.textContent = 'Categories';
+
+  categoryList.appendChild(title);
 
   categories.forEach((category) => {
     const listItem = document.createElement('li');
@@ -71,7 +79,10 @@ Runs when the page is refreshed.
 If user had selected a category when refreshing the page, this function
 fetches the correct data and renders the list.
 */
-async function drawContent(selectedCategory) {
+export async function drawContent(selectedCategory) {
+  const categories = await getCategories();
+  drawSidebar(categories);
+
   // Find parent element and clear content
   const section = document.querySelector('section');
 
@@ -107,6 +118,7 @@ function listQuestions(questions, selectedCategory) {
 
   // Draw list
   const list = document.createElement('ol');
+  list.id = 'question-list';
 
   if (questions.length === 0) {
     const text = document.createElement('p');
@@ -117,6 +129,7 @@ function listQuestions(questions, selectedCategory) {
     questions.forEach((element) => {
       // Draw list item
       const questionItem = document.createElement('li');
+      questionItem.id = element.id;
       questionItem.textContent = element.question;
       questionItem.classList.add('list__question');
 
@@ -139,6 +152,7 @@ function listQuestions(questions, selectedCategory) {
       delBtn.addEventListener('click', async (e) => {
         if (confirm('Delete question?')) {
           const response = await deleteQuestion(e.target.value);
+          removeVisually(e.target.value);
           drawMessage(response);
         }
       });
@@ -156,6 +170,13 @@ function listQuestions(questions, selectedCategory) {
       sectionContent.appendChild(list);
     });
   }
+}
+
+// Handles removing the questions from listing without forcing a full page refresh
+function removeVisually(id) {
+  const parent = document.getElementById('question-list');
+  const removable = document.getElementById(id);
+  parent.removeChild(removable);
 }
 
 /* 

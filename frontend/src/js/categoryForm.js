@@ -3,6 +3,7 @@ import {
   postCategory,
   updateCategory,
   deleteCategory,
+  getCategories,
 } from '../api/categoryApi.js';
 import {
   createForm,
@@ -14,6 +15,7 @@ import {
   createDiv,
 } from './formHelpers.js';
 import { getQuestions } from '../api/questionApi.js';
+import { drawContent } from './admin.js';
 
 let visibleCategories = 1;
 let totalCategories = 1;
@@ -53,7 +55,7 @@ export async function categoryForm(id) {
   form.appendChild(formFooter);
 
   if (!id) {
-    const addBtn = createBtn('Add category');
+    const addBtn = createBtn('Add another');
     addBtn.classList.add('btn-primary');
 
     addBtn.addEventListener('click', (e) => {
@@ -136,7 +138,7 @@ function handleRemove(e) {
 }
 
 // Handles both saving new category and updating an existing category
-function handleSubmit(id) {
+async function handleSubmit(id) {
   if (!id) {
     // Define new array for the categories
     const newCategories = [];
@@ -157,7 +159,10 @@ function handleSubmit(id) {
       newCategories.push(newCategory);
     });
     console.log(newCategories);
-    postCategory(newCategories);
+
+    // Wait for the response
+    await postCategory(newCategories);
+    drawContent();
   } else {
     const categoryField = document.querySelector('#C1');
 
@@ -166,8 +171,14 @@ function handleSubmit(id) {
       category: categoryField.value,
     };
 
-    updateCategory(updatedCategory, id);
+    const updated = await updateCategory(updatedCategory, id);
+
+    // Pass the updated document to drawContent to refresh the page
+    drawContent(updated);
   }
+
+  // TODO: Add error handling that keeps the dialog open in error cases
+  handleModal();
 }
 
 /* When deleting a category, check if there is questions in it. If yes, ask user "are you sure" 
@@ -206,10 +217,11 @@ export async function categoryDeleting(id) {
 
   const button = createBtn('Confirm');
   button.classList.add('btn-primary');
-  button.addEventListener('click', () => {
-    deleteCategory(id);
+  button.addEventListener('click', async () => {
+    await deleteCategory(id);
+    window.location.hash = '';
+    history.replaceState('', '', window.location.pathname);
     handleModal();
-    window.location.reload();
   });
 
   formFooter.appendChild(button);

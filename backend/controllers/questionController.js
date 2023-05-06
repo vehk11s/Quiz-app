@@ -36,6 +36,67 @@ exports.get_questions = [
   },
 ];
 
+// GET quiz version of questions
+export const getQuizQuestions = async (category) => {
+  let categoryId = new mongoose.Types.ObjectId(category);
+
+  const questions = await Question.aggregate([
+    {
+      $match: {
+        $and: [
+          {
+            category: categoryId,
+          },
+          {
+            options: {
+              $elemMatch: {
+                isCorrect: true,
+              },
+            },
+          },
+        ],
+      },
+    },
+    {
+      $sample: {
+        size: 10,
+      },
+    },
+    {
+      $lookup: {
+        from: 'categories',
+        localField: 'category',
+        foreignField: '_id',
+        as: 'category',
+      },
+    },
+  ]);
+
+  // Define array for the questions
+  const quizQuestions = [];
+
+  // Loop each returned question
+  questions.forEach((question) => {
+    let values = question.options;
+
+    // Remove isCorrect
+    values.forEach((opt) => {
+      delete opt.isCorrect;
+    });
+    // Shuffle array
+    values = values.sort(() => 0.5 - Math.random());
+
+    // Replace values
+    question['options'] = values;
+    question['category'] = question.category[0];
+
+    // Push new object to array
+    quizQuestions.push(question);
+  });
+
+  return quizQuestions;
+};
+
 // GET single question by id
 exports.get_question = [
   param('id', 'Invalid question id')
