@@ -14,8 +14,8 @@ routes
   .delete(questionController.delete_question);
 
 routes
-  .route('/quizQuestions/:id')
-  .get(questionController.getQuizQuestions)
+  .route('/quizQuestion/:id')
+  .get(questionController.getQuizQuestion)
 
 
 module.exports = routes;

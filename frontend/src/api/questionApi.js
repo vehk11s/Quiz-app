@@ -1,4 +1,6 @@
 const url = 'http://localhost:3000/questions/';
+const quizQuestionUrl = 'http://localhost:3000/quizQuestion/';
+
 
 export const getQuestions = async (query) => {
   const questions = await fetch(url + '?' + new URLSearchParams(query), {
@@ -23,6 +25,15 @@ export const postQuestion = async (data) => {
 
   return formatResponse(response, 'PATCH', 'Question(s) saved successfully!');
 };
+
+
+export const getQuizQuestion = async (id) => {
+  const question = await fetch(quizQuestionUrl + id, {
+    method: 'GET',
+  });
+  return await question.json();
+};
+
 
 export const updateQuestion = async (data, id) => {
   const response = await fetch(url + id, {
