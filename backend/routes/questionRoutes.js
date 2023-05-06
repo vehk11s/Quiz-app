@@ -13,4 +13,9 @@ routes
   .patch(questionController.edit_question)
   .delete(questionController.delete_question);
 
+routes
+  .route('/quizQuestions/:id')
+  .get(questionController.getQuizQuestions)
+
+
 module.exports = routes;
