@@ -111,7 +111,6 @@ export async function drawQuestionPhase(gameData) {
 
   //Get next question
   let question = await getNextQuestion(gameData);
-  console.log(question);
 
   //If category does not have any questions tell player about that and draw Quit game -button
   if ( question === 0 ){
