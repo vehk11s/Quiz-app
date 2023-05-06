@@ -43,7 +43,7 @@ export async function createNewGame(category, difficulty) {
       return 0;
     }
 
-    return await gameData
+    return await gameData;
   }
   catch (error) {
     console.log("ERROR: cannot create new game: ", error);

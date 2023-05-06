@@ -50,17 +50,19 @@ exports.getQuizQuestion = [
       validationResult(req).throw();
 
       let questionId = new mongoose.Types.ObjectId(req.params.id);
-
+/*          
+          },*/
       await Question.aggregate([
         {
           $match: { 
             _id: questionId,
-          },
-          options: {
-            $elemMatch: {
-              isCorrect: true,
+            options: {
+              $elemMatch: {
+                isCorrect: true,
+              },
             },
           },
+
         },
       ])
       .then((result) => {
