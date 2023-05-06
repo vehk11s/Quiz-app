@@ -118,6 +118,7 @@ function listQuestions(questions, selectedCategory) {
 
   // Draw list
   const list = document.createElement('ol');
+  list.id = 'question-list';
 
   if (questions.length === 0) {
     const text = document.createElement('p');
@@ -128,6 +129,7 @@ function listQuestions(questions, selectedCategory) {
     questions.forEach((element) => {
       // Draw list item
       const questionItem = document.createElement('li');
+      questionItem.id = element.id;
       questionItem.textContent = element.question;
       questionItem.classList.add('list__question');
 
@@ -150,6 +152,7 @@ function listQuestions(questions, selectedCategory) {
       delBtn.addEventListener('click', async (e) => {
         if (confirm('Delete question?')) {
           const response = await deleteQuestion(e.target.value);
+          removeVisually(e.target.value);
           drawMessage(response);
         }
       });
@@ -167,6 +170,13 @@ function listQuestions(questions, selectedCategory) {
       sectionContent.appendChild(list);
     });
   }
+}
+
+// Handles removing the questions from listig without forcing a full page refresh
+function removeVisually(id) {
+  const parent = document.getElementById('question-list');
+  const removable = document.getElementById(id);
+  parent.removeChild(removable);
 }
 
 /* 

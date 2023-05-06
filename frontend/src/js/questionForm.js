@@ -14,6 +14,7 @@ import {
   createDiv,
 } from './formHelpers.js';
 import { drawMessage } from './message.js';
+import { drawContent } from './admin.js';
 
 let visibleQuestions = 1; // Tracks the visible question sets on display, used for dynamical indexing
 let totalQuestions = 1; // Doesn't decrease when removing a question, used for element ids
@@ -117,7 +118,8 @@ export async function drawForm(id) {
   // Submit button is added to both forms
   const submitBtn = createBtn('Save');
   submitBtn.classList.add('btn-primary');
-  submitBtn.addEventListener('click', () => {
+  submitBtn.addEventListener('click', (e) => {
+    e.preventDefault();
     handleSubmit(id);
   });
 
@@ -363,6 +365,7 @@ async function handleSubmit(id) {
 
   if (!hasErrors) {
     handleStatus(response);
+    drawContent()
   }
 }
 
