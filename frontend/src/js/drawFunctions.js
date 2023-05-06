@@ -113,10 +113,12 @@ export async function drawQuestionPhase(gameData) {
 
   screenDiv.appendChild(title);
 
-  //draw title question as a title?
+  //draw question as a title?
+  const questionNumber = parseInt(gameData[0].questionsAnswered + 1);
+
   const questionP = document.createElement('p');
   questionP.classList.add('lg');
-  questionP.innerText = question.question;
+  questionP.innerText = `${questionNumber}. ${question.question}`;
 
   screenDiv.appendChild(questionP);
 
@@ -215,6 +217,7 @@ export async function drawEndingPhase(gameData) {
   const skipButton = document.createElement('button');
   skipButton.classList.add('btn', 'btn-secondary');
   skipButton.textContent = 'Skip';
+  skipButton.id = 'btnSkip';
 
   // draw submitButton = save score + name and return to main
   const indexButton = document.createElement('button');

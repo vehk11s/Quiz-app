@@ -22,19 +22,14 @@ const gameState = {
 //15min = 900 000 ms
 const RUN_DELETE_GAMES_DELAY_MS = 900000;
 
-
 //1h in ms
 const HOUR = 1000 * 60 * 60;
-
 
 //questions per game
 const QUESTIONS_PER_GAME = 10;
 
 //Save timestamp from last time the unfinished games deleted
 let lastRun = Date.now();
-
-
-
 
 
 /*
@@ -201,41 +196,51 @@ exports.update_game = async function (req, res) {
 
   const param = req.body;
 
-  const answerId = param.answerId;
+  let updateData = null;
 
-  const gameData = await getGameCurrentState(id);
-
-  let questionsAnswered = gameData[0].questionsAnswered;
-  let score = gameData[0].score;
-  let questionId = gameData[0].questions[questionsAnswered]._id;
-
-  let state = param.state;
-
-  if ( await isCorrectAnswer(answerId, questionId) ){
-    //increase score
-    //todo after timers are done for different difficulty settings then update score logic also
-    console.log("correct answer!!!");
-    score += 100;
-  }
-
-  //If player has not answered to 10 questions then ask another question
-  if ( questionsAnswered < ( QUESTIONS_PER_GAME - 1 ) ){
-    questionsAnswered += 1;
-    state = gameState.QUESTIONS;
+  if ( param.nameUpdate ){
+    //update only players name
+    console.log("Name: " + param.player);
+    updateData = {
+      "player": param.player,
+    };
   }
   else{
-    //player has answered to all questions so to end
-    state = gameState.ENDING;
+    //run game
+
+    const answerId = param.answerId;
+
+    const gameData = await getGameCurrentState(id);
+
+    let questionsAnswered = gameData[0].questionsAnswered;
+    let score = gameData[0].score;
+    let questionId = gameData[0].questions[questionsAnswered]._id;
+
+    let state = param.state;
+
+    if ( await isCorrectAnswer(answerId, questionId) ){
+      //increase score
+      //todo after timers are done for different difficulty settings then update score logic also
+
+      score += 100;
+    }
+
+    //If player has not answered to 10 questions then ask another question
+    if ( questionsAnswered < ( QUESTIONS_PER_GAME - 1 ) ){
+      questionsAnswered += 1;
+      state = gameState.QUESTIONS;
+    }
+    else{
+      //player has answered to all questions so to end
+      state = gameState.ENDING;
+    }
+
+    updateData = {
+      "questionsAnswered": questionsAnswered,
+      "score": score,
+      "state": state
+    };
   }
-
-
-
-  let updateData = {
-    "questionsAnswered": questionsAnswered,
-    "player": param.player,
-    "score": score,
-    "state": state
-  };
 
 
   try{
@@ -290,8 +295,6 @@ exports.delete_game = async function (req, res) {
 
 
 
-
-
 async function deleteUnfinishedGames(){
   
   lastRun = Date.now();
@@ -318,8 +321,6 @@ async function deleteUnfinishedGames(){
 
 
 
-
-
 async function getGameCurrentState(id){
   
   try{
@@ -339,7 +340,6 @@ async function getGameCurrentState(id){
     return -1;
   }
 }
-
 
 
 

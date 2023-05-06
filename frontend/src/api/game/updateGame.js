@@ -1,72 +1,16 @@
 const SERVER = "http://127.0.0.1:3000";
 
 /*
-  Updates game data based on gameId.
+  Updates players name to game data at the end of the game based on gameId.
   Parameters: gameId Current game id
-              gameData game data got from backend
-              score (How much is increased)
-              incQuestionsAnswered (true/false, do we increase questionsAnswered variable by 1)
-              name (do we update name)
+              name, players name
+
   Returns:    0 if error
               updated gameData on success
-
-export async function updateGame(gameId, gameData, score = 0, incQuestionsAnswered = false, name = "Anonymous") {
-
-  let data;
-
-  //Create updated data to be stored in database
-  if ( incQuestionsAnswered ){
-    data = {
-      "player": name,
-      "score": parseInt(gameData[0].score + score),
-      "questionsAnswered": parseInt(gameData[0].questionsAnswered + 1)
-    };
-
-    //save updated values to gameData
-    gameData[0].score = data.score;
-    gameData[0].player = data.player;
-    gameData[0].questionsAnswered = data.questionsAnswered;
-  }
-  else{
-    data = {
-      "player": name,
-      "score": parseInt(gameData[0].score + score)
-    };
-
-    //save updated values to gameData
-    gameData[0].score = data.score;
-    gameData[0].player = data.player;
-  }
-
-
-
-  const settings = {
-    method: "PATCH",
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  };
-
-  try {
-    let response = await fetch(`${SERVER}/games/${gameId}`, settings);
-    let responseInJson = await response.json();
-
-    if (!responseInJson) {
-      console.log("Cannot update the game: ", responseInJson);
-      return 0;
-    }
-
-    return gameData;
-  }
-  catch (error) {
-    console.log("ERROR: Cannot update the game: ", error);
-    return 0;
-  }
-};
 */
-
 export async function updatePlayerName(gameId, name) {
   //Create updated data to be stored in database
-  data = {
+  let data = {
     "player": name,
     "nameUpdate": true
   };
@@ -94,15 +38,23 @@ export async function updatePlayerName(gameId, name) {
   }
 }
 
+/*
+  Updates game data based on gameId.
+  Parameters: gameId Current game id
+              answerId, id of the option player answered
+
+  Returns:    0 if error
+              updated gameData on success
+*/
 export async function updateGame(gameId, answerId) {
 
-  let data;
   const state = parseInt(localStorage.getItem("gameState"));
 
   //Create updated data to be stored in database
-  data = {
+  let data = {
     "answerId": answerId,
-    "state": state
+    "state": state,
+    "nameUpdate": false
   };
 
   const settings = {

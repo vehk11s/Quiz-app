@@ -1,5 +1,5 @@
 import { createNewGame } from '../api/game/createNewGame.js';
-import { getGameDataById, updateGame } from '../api/game/updateGame.js';
+import { updatePlayerName, updateGame } from '../api/game/updateGame.js';
 
 import { drawIndexPage, drawQuestionPhase, drawEndingPhase } from './drawFunctions.js';
 
@@ -29,12 +29,16 @@ const QUESTION_LIMIT = 10;
 
 //after the page is loaded reset localStorage and start new game
 window.addEventListener("load", async (event) => {
-    //Reset localStorage at reload
+    
+  /*
+    TODO: load game from database, if current game is still running 
+
     if(localStorage.getItem('gameId') && localStorage.getItem('gameState') != 0){
       //create function that gets gameData from backend
       console.log("restore game from db...");
     }
-
+*/
+    //Reset localStorage at reload
     await resetGame();
 
     console.log("Quiz app is fully loaded");
@@ -156,9 +160,13 @@ async function gameStateMachine(gameData = null) {
       await drawEndingPhase(gameData);
 
       const btnMainMenu = document.getElementById("btnMainMenu");
+      const btnSkip = document.getElementById("btnSkip"); 
 
       btnMainMenu.addEventListener("mouseup", handleMainMenuButtonPress);
       btnMainMenu.addEventListener("keypress", handleMainMenuButtonPress);
+
+      btnSkip.addEventListener("mouseup", handleSkipButtonPress);
+      btnSkip.addEventListener("keypress", handleSkipButtonPress);
 
       break;
 
@@ -207,9 +215,8 @@ function handleMainMenuButtonPress(e) {
     
     //Update player name to database
     const input = document.getElementById('nameInput');
-    if ( input.value.length > 2){
-      //updatePlayerName(input.value);
-      console.log(input.value);
+    if ( input.value.length > 0){
+      updatePlayerName(localStorage.getItem('gameId'), input.value);
     }
 
     resetGame();
@@ -220,6 +227,15 @@ function handleMainMenuButtonPress(e) {
       localStorage.setItem('playerName', input.value);
     }
 
+    gameStateMachine();
+  }
+};
+
+//basicly same as menuButton, but does not save users name
+function handleSkipButtonPress(e) {
+  if (e.key === 'Enter' || e.type === 'mouseup') {
+    
+    resetGame();
     gameStateMachine();
   }
 };
