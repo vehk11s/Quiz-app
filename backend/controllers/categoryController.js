@@ -4,21 +4,31 @@ const Question = require('../models/questionModel');
 
 // GET all categories 
 exports.get_categories = async function (req, res) {
-  const categories = await Category.find()
-  .then((data) => {
-    res.json(data)
-  });
+  try{
+    const categories = await Category.find();
+    res.json(categories);
+  }
+  catch(error)
+  {
+    res.status(400).json({message: error.message});
+  }
 };
 
 // POST new category
-exports.add_category = async function (req, res) {
-  const body = req.body;
-  console.log(body);
-
-  await Category.insertMany(body).then((saved) => {
-    res.json(saved);
-  });
-};
+exports.add_category =
+  async function (req, res) {
+    try{
+      const body = req.body;
+      console.log(body);
+    
+      const newCategories = await Category.insertMany(body);
+      res.json(newCategories);
+    }
+    catch(error)
+    {
+      res.status(400).json({message:error.message});
+    }
+  };
 
 // Get one category
 exports.get_category = async function (req, res) {
