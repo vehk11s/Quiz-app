@@ -222,7 +222,7 @@ function handleMainMenuButtonPress(e) {
     resetGame();
 
     //save player name to local storage if player wants to
-    const storePlayerName = document.getElementById('storeInput');
+    const storeInput = document.getElementById('storeInput');
     if ( storeInput.checked ){
       localStorage.setItem('playerName', input.value);
     }
