@@ -154,7 +154,7 @@ exports.add_game = async function (req, res) {
     const newGame = new Game(updateData);
 
     //get 10 random questions from selected category
-    let questions = getRandomQuestions(allQuestions, 10);
+    let questions = getRandomQuestions(allQuestions, QUESTIONS_PER_GAME);
 
     //store selected 10 questions to newGame
     for ( let index = 0; index < questions.length; index++ ){
@@ -224,8 +224,10 @@ exports.update_game = async function (req, res) {
       score += 100;
     }
 
-    //If player has not answered to 10 questions then ask another question
-    if ( questionsAnswered < ( QUESTIONS_PER_GAME - 1 ) ){
+    const questionsInGame = gameData[0].questions.length;
+
+    //If player has not answered to all questions in game then ask another question
+    if ( questionsAnswered < (questionsInGame - 1) ){
       questionsAnswered += 1;
       state = gameState.QUESTIONS;
     }

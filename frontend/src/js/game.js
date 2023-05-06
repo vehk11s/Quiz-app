@@ -1,5 +1,5 @@
 import { createNewGame } from '../api/game/createNewGame.js';
-import { updatePlayerName, updateGame } from '../api/game/updateGame.js';
+import { updatePlayerName, updateGame, getGameDataById } from '../api/game/updateGame.js';
 
 import { drawIndexPage, drawQuestionPhase, drawEndingPhase } from './drawFunctions.js';
 
@@ -27,22 +27,20 @@ const gameState = {
 const QUESTION_LIMIT = 10;
 
 
-//after the page is loaded reset localStorage and start new game
 window.addEventListener("load", async (event) => {
-    
-  /*
-    TODO: load game from database, if current game is still running 
+  
+  console.log("Quiz app is fully loaded");
 
-    if(localStorage.getItem('gameId') && localStorage.getItem('gameState') != 0){
-      //create function that gets gameData from backend
-      console.log("restore game from db...");
-    }
-*/
-    //Reset localStorage at reload
+  let gameData = null;
+
+  if(localStorage.getItem('gameId') && localStorage.getItem('gameState') != 0){
+    gameData = await getGameDataById(localStorage.getItem('gameId'));
+  }
+  else{
+    //Reset localStorage at reload in error case
     await resetGame();
-
-    console.log("Quiz app is fully loaded");
-    gameStateMachine();
+  }
+    gameStateMachine(gameData);
 });
 
 
@@ -151,6 +149,17 @@ async function gameStateMachine(gameData = null) {
         optionButtons[index].addEventListener("keypress", handleOptionButtonPress);
       }
 
+      //handle other buttons
+
+      const btnQuitGame = document.getElementById("btnQuitGame");
+      const btnSkipToEnd = document.getElementById("btnSkipToEnd"); 
+
+      btnQuitGame.addEventListener("mouseup", handleQuitGameButtonPress);
+      btnQuitGame.addEventListener("keypress", handleQuitGameButtonPress);
+
+      btnSkipToEnd.addEventListener("mouseup", handleSkipToEndButtonPress);
+      btnSkipToEnd.addEventListener("keypress", handleSkipToEndButtonPress);
+
       break;
 
     case gameState.ENDING:
@@ -165,8 +174,8 @@ async function gameStateMachine(gameData = null) {
       btnMainMenu.addEventListener("mouseup", handleMainMenuButtonPress);
       btnMainMenu.addEventListener("keypress", handleMainMenuButtonPress);
 
-      btnSkip.addEventListener("mouseup", handleSkipButtonPress);
-      btnSkip.addEventListener("keypress", handleSkipButtonPress);
+      btnSkip.addEventListener("mouseup", handleQuitGameButtonPress);
+      btnSkip.addEventListener("keypress", handleQuitGameButtonPress);
 
       break;
 
@@ -226,22 +235,39 @@ function handleMainMenuButtonPress(e) {
     if ( storeInput.checked ){
       localStorage.setItem('playerName', input.value);
     }
+    else{
+      //remove players name from localStorage
+      localStorage.removeItem("playerName");
+    }
 
     gameStateMachine();
   }
 };
 
 //basicly same as menuButton, but does not save users name
-function handleSkipButtonPress(e) {
+function handleQuitGameButtonPress(e) {
   if (e.key === 'Enter' || e.type === 'mouseup') {
     
     resetGame();
+    localStorage.removeItem("playerName");
     gameStateMachine();
+  }
+};
+
+
+//Skips game directly to ending phase
+async function handleSkipToEndButtonPress(e) {
+  if (e.key === 'Enter' || e.type === 'mouseup') {
+    const gameData = await getGameDataById(localStorage.getItem('gameId'));
+    localStorage.setItem('gameState', gameState.ENDING);
+    gameStateMachine(gameData);
   }
 };
 
 
 //Todo possibly other values might need reseting
 async function resetGame(){
-  localStorage.clear();
+  //localStorage.clear();
+  localStorage.removeItem("gameId");
+  localStorage.removeItem("gameState");
 };
