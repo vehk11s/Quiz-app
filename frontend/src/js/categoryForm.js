@@ -14,6 +14,7 @@ import {
   createDiv,
 } from './formHelpers.js';
 import { getQuestions } from '../api/questionApi.js';
+import { drawContent } from './admin.js';
 
 let visibleCategories = 1;
 let totalCategories = 1;
@@ -136,7 +137,7 @@ function handleRemove(e) {
 }
 
 // Handles both saving new category and updating an existing category
-function handleSubmit(id) {
+async function handleSubmit(id) {
   if (!id) {
     // Define new array for the categories
     const newCategories = [];
@@ -166,7 +167,13 @@ function handleSubmit(id) {
       category: categoryField.value,
     };
 
-    updateCategory(updatedCategory, id);
+    const updated = await updateCategory(updatedCategory, id);
+
+    // Pass returned and updated document to drawContent to refresh the page
+    drawContent(updated);
+
+    // Close the dialog
+    handleModal()
   }
 }
 

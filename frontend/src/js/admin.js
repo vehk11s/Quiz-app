@@ -25,7 +25,6 @@ window.addEventListener('load', async () => {
     history.replaceState('', '', window.location.pathname);
   }
 
-  drawSidebar(categories);
   drawContent(selectedCategory);
 });
 
@@ -35,6 +34,15 @@ Draws sidebar, category nav and control buttons for adding new categories and qu
 async function drawSidebar(categories) {
   const sidebar = document.querySelector('aside');
   const categoryList = sidebar.querySelector('.nav-categories');
+
+  // Remove previous content
+  categoryList.innerHTML = '';
+
+  const title = document.createElement('p');
+  title.classList.add('lg');
+  title.textContent = 'Categories';
+
+  categoryList.appendChild(title);
 
   categories.forEach((category) => {
     const listItem = document.createElement('li');
@@ -71,7 +79,10 @@ Runs when the page is refreshed.
 If user had selected a category when refreshing the page, this function
 fetches the correct data and renders the list.
 */
-async function drawContent(selectedCategory) {
+export async function drawContent(selectedCategory) {
+  const categories = await getCategories();
+  drawSidebar(categories);
+
   // Find parent element and clear content
   const section = document.querySelector('section');
 
