@@ -3,6 +3,7 @@ import {
   postCategory,
   updateCategory,
   deleteCategory,
+  getCategories,
 } from '../api/categoryApi.js';
 import {
   createForm,
@@ -15,6 +16,7 @@ import {
 } from './formHelpers.js';
 import { getQuestions } from '../api/questionApi.js';
 import { drawContent } from './admin.js';
+import { drawMessage } from './message.js';
 
 let visibleCategories = 1;
 let totalCategories = 1;
@@ -158,7 +160,10 @@ async function handleSubmit(id) {
       newCategories.push(newCategory);
     });
     console.log(newCategories);
-    postCategory(newCategories);
+
+    // Wait for the response
+    await postCategory(newCategories);
+    drawContent();
   } else {
     const categoryField = document.querySelector('#C1');
 
@@ -169,12 +174,12 @@ async function handleSubmit(id) {
 
     const updated = await updateCategory(updatedCategory, id);
 
-    // Pass returned and updated document to drawContent to refresh the page
+    // Pass the updated document to drawContent to refresh the page
     drawContent(updated);
-
-    // Close the dialog
-    handleModal()
   }
+
+  // TODO: Add error handling that keeps the dialog open in error cases
+  handleModal();
 }
 
 /* When deleting a category, check if there is questions in it. If yes, ask user "are you sure" 
@@ -213,10 +218,10 @@ export async function categoryDeleting(id) {
 
   const button = createBtn('Confirm');
   button.classList.add('btn-primary');
-  button.addEventListener('click', () => {
-    deleteCategory(id);
+  button.addEventListener('click', async () => {
+    await deleteCategory(id);
+    drawContent();
     handleModal();
-    window.location.reload();
   });
 
   formFooter.appendChild(button);
