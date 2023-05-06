@@ -37,57 +37,60 @@ exports.get_questions = [
 ];
 
 // GET quiz version of question by id
-
 exports.getQuizQuestion = [
   param('id', 'Invalid question id')
     .exists()
     .isMongoId()
     .custom((val) => Question.isValidQuestion(val)),
 
-    
+
   async function (req, res) {
     try {
       validationResult(req).throw();
 
       let questionId = new mongoose.Types.ObjectId(req.params.id);
-/*          
-          },*/
+
       await Question.aggregate([
         {
-          $match: { 
+          $match: {
             _id: questionId,
+
             options: {
               $elemMatch: {
                 isCorrect: true,
               },
             },
-          },
-
+          }
         },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'category',
+            foreignField: '_id',
+            as: 'category',
+          }
+        }
       ])
-      .then((result) => {
+        .then((result) => {
 
-        let values = result[0].options;
-        
-        // Remove isCorrect
-        result[0].options.forEach((opt) => {
-          delete opt.isCorrect;
-        });
+          let values = result[0].options;
 
-        // Shuffle array
-        values = values.sort(() => 0.5 - Math.random());
+          // Remove isCorrect
+          result[0].options.forEach((opt) => {
+            delete opt.isCorrect;
+          });
 
-        // Replace values
-        result[0]['options'] = values;
+          // Shuffle array
+          values = values.sort(() => 0.5 - Math.random());
 
-        res.status(200).json(result[0]);
-      })
-      .catch((error) => {
-        res.send(error);
-      });
-  } catch (error) {
-    res.status(400).send(error.mapped());
-  }
+          // Replace values
+          result[0]['options'] = values;
+
+          res.status(200).json(result[0]);
+        })
+    } catch (error) {
+      res.status(400).send(`getQuizQuestion(): error while fetching question: ${error}`);
+    }
   },
 ];
 

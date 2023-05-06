@@ -109,7 +109,7 @@ export async function drawQuestionPhase(gameData) {
   //set title
   const title = document.createElement('p');
   title.classList.add('title');
-  title.innerText = question.category.category;
+  title.innerText = question.category[0].category;
 
   screenDiv.appendChild(title);
 
