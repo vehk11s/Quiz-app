@@ -1,77 +1,116 @@
-const { Collection } = require('mongoose');
-const Category = require('../models/categoryModel');
-const Question = require('../models/questionModel');
+const { Collection } = require("mongoose");
+const Category = require("../models/categoryModel");
+const Question = require("../models/questionModel");
+const {
+  check,
+  body,
+  param,
+  validationResult,
+} = require("express-validator");
 
-// GET all categories 
+// GET all categories
 exports.get_categories = async function (req, res) {
-  try{
+  try {
     const categories = await Category.find();
     res.json(categories);
-  }
-  catch(error)
-  {
-    res.status(400).json({message: error.message});
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 };
 
 // POST new category
-exports.add_category =
+exports.add_category = [
+  body("", "Wrong format").isArray().bail(),
+  check("*.category", "Category can't be empty")
+    .trim()
+    .notEmpty()
+    .isString()
+    .escape()
+    .bail(),
+
   async function (req, res) {
-    try{
+    try {
+      validationResult(req).throw();
+
       const body = req.body;
       console.log(body);
-    
-      const newCategories = await Category.insertMany(body);
-      res.json(newCategories);
-    }
-    catch(error)
-    {
-      res.status(400).json({message:error.message});
-    }
-  };
 
-// Get one category
-exports.get_category = async function (req, res) {
-  try{
-    const data = await Category.findById(req.params.id);
-    res.json(data);
-  }
-  catch(error)
-  {
-    res.status(500).json({message: error.message});
-  }
-};
+      await Category.insertMany(body).then((saved) => res.json(saved));
+    } catch (error) {
+      res.status(400).send(error.mapped());
+    }
+  },
+];
+
+// Get one category by id
+exports.get_category = [
+  param("id", "Invalid category id")
+    .exists()
+    .isMongoId()
+    .custom((val) => Category.isValidCategory(val)),
+
+  async function (req, res) {
+    try {
+      validationResult(req).throw();
+
+      await Category.findById(req.params.id).then((result) => res.json(result));
+    } catch (error) {
+      res.status(400).send(error.mapped());
+    }
+  },
+];
 
 // PUT Update category by id
-exports.edit_category = async function (req,res) {
-  try {
-    const id = req.params.id;
-    const updatedData = req.body;
-    const options = { new: true};
+exports.edit_category = [
+  param("id", "Invalid category id")
+    .exists()
+    .isMongoId()
+    .custom((val) => Category.isValidCategory(val))
+    .optional(),
+  body("category", "Category can't be empty")
+    .trim()
+    .notEmpty()
+    .isString()
+    .escape()
+    .optional(),
 
-    const result = await Category.findByIdAndUpdate(
-      id, updatedData, options
-    );
+  async function (req, res) {
+    try {
+      validationResult(req).throw();
 
-    res.send(result);
-  }
-  catch (error) {
-    res.status(400).json({message: error.message});
-  }
-};
+      const id = req.params.id;
+      const updatedData = req.body;
+      const options = { new: true };
+
+      await Category.findByIdAndUpdate(id, updatedData, options).then(
+        (updated) => res.json(updated)
+      );
+    } catch (error) {
+      res.status(400).send(error.mapped());
+    }
+  },
+];
 
 // DELETE category
-exports.delete_category = async function (req, res) {
-  try {
-    const id = req.params.id;
-    const deleteQuestions = await Question.deleteMany({ category: id});
-    console.log(deleteQuestions);
+exports.delete_category = [
+  param("id", "Invalid category id")
+    .exists()
+    .isMongoId()
+    .custom((val) => Category.isValidCategory(val)),
 
-    const deletedCategory = await Category.findByIdAndDelete(id);
-    res.send(`Category ${deletedCategory.category} and questions in it has been deleted.`)
-  }
-  catch (error)
-  {
-    res.status(400).json({message:error.message});
-  }
-};
+  async function (req, res) {
+    try {
+      validationResult(req).throw();
+
+      const id = req.params.id;
+      const deleteQuestions = await Question.deleteMany({ category: id });
+      console.log(deleteQuestions);
+
+      await Category.findByIdAndDelete(id).then((result) => {
+        res.status(200).send(`Deleted category with id ${id}`);
+      });
+    } catch (error) {
+      res.status(400).send(error.mapped());
+    }
+  },
+];
