@@ -24,9 +24,12 @@ export async function drawIndexPage() {
   title.innerText = 'Instructions';
 
   // TODO: Add simple game instructions below the instructions title
-
+  const instructionText = document.createElement('p');
+  instructionText.textContent = 'Select the category and difficulty level you want from below and press the "start game" button to start the game. By default, the game is set to easy. The quiz contains 10 questions from your chosen category and at the end of the game you will have the option to save your username and score in the database. You can quit the game at any time by pressing the "quit game" button. In the future, the game will have a time limit for medium and hard difficulty levels. If you are using a screen reader and want to play without a time limit, choose the easy difficulty level.';
+  
   screenDiv.appendChild(title);
-
+  screenDiv.appendChild(instructionText);
+  
   const optionsDiv = document.createElement('div');
   optionsDiv.classList.add('options', 'options-2');
 
