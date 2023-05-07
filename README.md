@@ -21,7 +21,7 @@ Backend is made with node.js and mongodb using following dependencies:
 - Nodemon; 
 - Mongoose;
 - Dotenv;
-- xpress-validator;
+- express-validator;
 - CORS
 
 Frontend is made with html5, CSS3 and vanilla javascript. Accessibility of the frontend is one of the highest goals of this project.
