@@ -144,7 +144,7 @@ export async function drawQuestionPhase(gameData) {
   else{
 
     //set title
-    const title = document.createElement('p');
+    const title = document.createElement('h1');
     title.classList.add('title');
     title.innerHTML = question.category[0].category;
 
