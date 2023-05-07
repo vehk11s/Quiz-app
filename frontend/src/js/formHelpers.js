@@ -53,7 +53,10 @@ export function createBtn(text, id) {
   const button = document.createElement('button');
   button.classList.add('btn');
 
-  button.id = id;
+  if (id) {
+    button.id = id;
+  }
+
   button.textContent = text;
 
   return button;
@@ -64,4 +67,12 @@ export function createDiv(className) {
   div.classList.add(className);
 
   return div;
+}
+
+// Handles unescaping HTML entities if needed to be set as field values
+export function decodeString(str) {
+  let decoded = new DOMParser().parseFromString(str, 'text/html');
+  decoded = decoded.documentElement.textContent;
+
+  return decoded;
 }

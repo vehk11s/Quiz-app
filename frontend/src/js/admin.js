@@ -50,7 +50,7 @@ async function drawSidebar(categories) {
 
     btn.id = category.id;
     btn.classList.add('btn', 'btn-list', 'btn-sm');
-    btn.textContent = category.category;
+    btn.innerHTML = category.category;
 
     btn.addEventListener('click', async () => {
       window.location.hash = btn.id;
@@ -91,7 +91,7 @@ export async function drawContent(selectedCategory) {
   const sectionTitle = sectionHeader.querySelector('h1');
 
   if (selectedCategory) {
-    sectionTitle.textContent = selectedCategory.category;
+    sectionTitle.innerHTML = selectedCategory.category;
     const questions = await getQuestions({ category: selectedCategory.id });
 
     listQuestions(questions, selectedCategory);
@@ -108,7 +108,7 @@ question listing
 function listQuestions(questions, selectedCategory) {
   // Update site header
   const sectionTitle = document.querySelector('h1');
-  sectionTitle.textContent = selectedCategory.category;
+  sectionTitle.innerHTML = selectedCategory.category;
 
   drawHeaderButtons(selectedCategory);
 
@@ -130,7 +130,7 @@ function listQuestions(questions, selectedCategory) {
       // Draw list item
       const questionItem = document.createElement('li');
       questionItem.id = element.id;
-      questionItem.textContent = element.question;
+      questionItem.innerHTML = element.question;
       questionItem.classList.add('list__question');
 
       // Draw nested list
@@ -139,7 +139,7 @@ function listQuestions(questions, selectedCategory) {
       // Draw list items for options
       element.options.forEach((option) => {
         const optionItem = document.createElement('li');
-        optionItem.textContent = `${option.option}`;
+        optionItem.innerHTML = `${option.option}`;
         optionsList.appendChild(optionItem);
       });
 
@@ -217,6 +217,7 @@ function drawHeaderButtons(category) {
 
   sectionHeader.appendChild(buttonDiv);
 }
+
 
 // Helper function
 function createBtn(type, elem, id) {

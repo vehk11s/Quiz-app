@@ -12,6 +12,7 @@ import {
   createInput,
   createBtn,
   createDiv,
+  decodeString,
 } from './formHelpers.js';
 import { drawMessage } from './message.js';
 import { drawContent } from './admin.js';
@@ -71,24 +72,24 @@ export async function drawForm(id) {
   categorySet.appendChild(categoryLegend);
 
   // Fetch categories and set the radio button group dynamically
-  const data = await getCategories();
+  const categories = await getCategories();
 
-  data.forEach((category) => {
-    const { category: name, id } = category;
+  categories.forEach((category) => {
+    const categoryName = decodeString(category.category);
 
-    const label = createLabel(name);
+    // Draw category labels and inputs
+    const label = createLabel(category.id, categoryName);
     label.classList.add('row');
-    const input = createInput(name, 'radio', 'category');
-    input.value = id;
+    const input = createInput(categoryName, 'radio', 'category');
+    input.id = category.id;
+    input.value = categoryName;
 
     // Set default values
-    if (question && question.category.id === id) {
+    if (question && question.category.id === category.id) {
       input.checked = true;
     }
 
-    label.appendChild(input);
-    label.insertAdjacentText('beforeend', name);
-
+    label.insertAdjacentElement('afterbegin', input);
     categorySet.appendChild(label);
   });
 
@@ -118,7 +119,6 @@ export async function drawForm(id) {
   // Submit button is added to both forms
   const submitBtn = createBtn('Save');
   submitBtn.classList.add('btn-primary');
-  submitBtn.type = 'button';
   submitBtn.addEventListener('click', () => {
     handleSubmit(id);
   });
@@ -169,7 +169,7 @@ function drawQuestion(question) {
 
   // Set default value for editing form
   if (question) {
-    questionInput.value = question.question;
+    questionInput.value = decodeString(question.question);
   }
 
   questionLabel.appendChild(questionInput);
@@ -238,7 +238,7 @@ function drawOptions(question) {
 
     // Set default values for editing form
     if (question) {
-      optionInput.value = question.options[optionNum - 1].option;
+      optionInput.value = decodeString(question.options[optionNum - 1].option);
       validInput.checked = question.options[optionNum - 1].isCorrect;
     }
 
@@ -288,8 +288,8 @@ async function handleSubmit(id) {
   );
 
   const category = {
-    category: selectedCategory.id,
-    id: selectedCategory.value,
+    category: selectedCategory.value,
+    id: selectedCategory.id,
   };
 
   if (!id) {
