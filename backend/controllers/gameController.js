@@ -1,6 +1,9 @@
+const mongoose = require('mongoose');
 const Game = require('../models/gameModel');
 const Question = require('../models/questionModel');
+const Category = require('../models/categoryModel');
 
+const { check, validationResult} = require('express-validator');
 
 /*
   enum for different gameStates
@@ -13,8 +16,8 @@ const Question = require('../models/questionModel');
 */
 const gameState = {
   ERROR: 0,
-	STARTGAME: 1,
-	QUESTIONS: 2,
+  STARTGAME: 1,
+  QUESTIONS: 2,
   ENDING: 3,
   INDEX: 4
 };
@@ -32,233 +35,302 @@ const QUESTIONS_PER_GAME = 10;
 let lastRun = Date.now();
 
 
-/*
-  Checks that paramId is valid id number: 24 chars, contains only: 0-9, a-f and A-F characters
-*/
-const checkValidityOfId = (paramId) => {
-
-  if ( !paramId )
-    return false;
-
-  //Check if parameter paramId is in valid format
-  if (!paramId.match(/^[0-9a-fA-F]{24}$/))
-    return false;
-
-  return true;
-};
-
-/*
-  Creates array which hold n ammount of random entries got from param object.
-*/
-const getRandomQuestions = (param, n) => {
-  let questionIdArray = [];
-
-  //store all the question ids to array
-  for (let question of param) {
-    questionIdArray.push(question.id);
-  }
-
-  // Shuffle array
-  let shuffled = questionIdArray.sort(() => 0.5 - Math.random());
-
-  // Get sub-array of first n elements after shuffled
-  return shuffled.slice(0, n);
-};
-
 
 /* 
   Get game by id
 */
-exports.get_game = async function (req, res) {
+exports.get_game = [
+  check('id', 'Invalid game id or game does not exist')
+    .exists()
+    .isMongoId()
+    .bail()
+    .custom((val) => Game.isValidGame(val)),
+    
 
-  const id = req.params.id;
+  async (req, res) => {
 
-  //Check the format of id
-  if ( !checkValidityOfId(id) ){
-    console.log(`Error: id: ${id} is not in valid format!`);
-    res.status(400).send(`Error: id: ${id} is not in valid format!`);
-  }
-
-
-  try{
-    const result = await Game.find( { _id: id } );
-
-    //Check if found any games
-    if ( Object.keys(result).length !== 0 ){
-      console.log(`function get_game(): Sending game ${id} data to frontend...`);
-      res.status(200).json(result);
+    const validationErrors = validationResult(req);
+    
+    if (!validationErrors.isEmpty()) {
+        res.status(422).send(validationErrors.mapped());
     }
     else{
-      console.log(`Game with id: ${id} does not exist.`);
-      res.status(404).send(`Game with id: ${id} does not exist.`);
+      const id = new mongoose.Types.ObjectId(req.params.id);
+
+      try {
+        const result = await Game.find({ _id: id });
+
+        //Check if found any games
+        if (Object.keys(result).length !== 0) {
+          console.log(`function get_game(): Sending game ${id} data to frontend...`);
+          res.status(200).json(result);
+        }
+      }
+      catch (error) {
+        console.log(`Error while fetching game: ${id}, error message: ${error}`);
+        res.status(400).send(`Error while fetching game: ${id}, error message: ${error}`);
+      }
     }
-  }
-  catch( error ){
-    console.log(`Error while fetching game: ${id}, error message: ${error}`);
-    res.status(400).send(`Error while fetching game: ${id}, error message: ${error}`);
-  }
-};
+  },
+]
 
 
 /* 
   Get top 10 games by category
 */
-exports.get_games_by_category = async function (req, res) {
+exports.get_games_by_category = [
+  check('category', 'Invalid category id or category does not exist')
+    .exists()
+    .isMongoId()
+    .bail()
+    .custom((val) => Category.isValidCategory(val)),
 
-  const categoryId = req.query.category;
+  async (req, res) => {
 
-  //Check the format of id
-  if ( !checkValidityOfId(categoryId) ){
-    console.log(`Error: categoryId: ${categoryId} is not in valid format!`);
-    res.status(400).send(`Error: categoryId: ${categoryId} is not in valid format!`);
-  }
-
-  console.log(`Finding games by category id: ${categoryId}`);
-
-  try{
-    const results = await Game.find( { category: categoryId } )
-                              .sort( { score: -1})
-                              .limit(10);                      
-
-    //Check if found any games
-    if ( Object.keys(results).length !== 0 ){
-      console.log(`Found games: ${results}` );
-      res.status(200).json(results);
+    const validationErrors = validationResult(req);
+    
+    if (!validationErrors.isEmpty()) {
+      res.status(422).send(validationErrors.mapped());
     }
-    else{
-      console.log(`Games with category id: ${categoryId} does not exist.`);
-      res.status(404).send(`Games with category id: ${categoryId} does not exist.`);
+    else {
+
+      const categoryId = new mongoose.Types.ObjectId(req.query.category);
+
+      console.log(`Finding games by category id: ${categoryId}`);
+
+      try {
+        const results = await Game.find({ category: categoryId })
+          .sort({ score: -1 })
+          .limit(10);
+
+        //Check if found any games
+        if (Object.keys(results).length !== 0) {
+          console.log(`Found ${Object.keys(results).length} games`);
+          res.status(200).json(results);
+        }
+        else {
+          console.log(`Games with category id: ${categoryId} does not exist.`);
+          res.status(404).send(`Games with category id: ${categoryId} does not exist.`);
+        }
+      }
+      catch (error) {
+        console.log(`Error while fetching games with category id: ${categoryId}, error message: ${error}`);
+        res.status(400).send(`Error while fetching games with category id: ${categoryId}, error message: ${error}`);
+      }
     }
-  }
-  catch( error ){
-    console.log(`Error while fetching games with category id: ${categoryId}, error message: ${error}`);
-    res.status(400).send(`Error while fetching games with category id: ${categoryId}, error message: ${error}`);
-  }
-};
+  },
+]
+
+
 
 /* 
   POST new game
 */
-exports.add_game = async function (req, res) {
-  
-  const updateData = req.body;
-  const options = { new: true };
+exports.add_game = [
+  check('category', 'Invalid category id')
+    .exists()
+    .isMongoId()
+    .bail({ level: 'request' })
+    .custom((val) => Category.isValidCategory(val)),
+  check('player', 'Player needs a valid name')
+    .exists()
+    .trim()
+    .notEmpty()
+    .bail()
+    .isString()
+    .escape(),
+  check('difficulty', 'Difficulty must be: easy, medium or hard')
+    .optional()
+    .trim()
+    .notEmpty()
+    .isString()
+    .escape()
+    .isIn(['easy', 'medium', 'hard']),
+  check('score', "Score must be a number")
+    .optional()
+    .trim()
+    .notEmpty()
+    .isNumeric()
+    .escape(),
+  check('state', "State must be a number")
+    .optional()
+    .trim()
+    .notEmpty()
+    .isNumeric()
+    .escape(),
+  check('questionsAnswered', "questionsAnswered must be a number")
+    .optional()
+    .trim()
+    .notEmpty()
+    .isNumeric()
+    .escape(),
 
-  //delete unfinished games if it is time for that
-  if ( ( Date.now() - lastRun ) >= RUN_DELETE_GAMES_DELAY_MS ){
-    deleteUnfinishedGames();
-  }
 
-  try{
-    const allQuestions = await Question.find({ category: updateData.category }, options);
-    const newGame = new Game(updateData);
+  async (req, res) => {
 
-    //get 10 random questions from selected category
-    let questions = getRandomQuestions(allQuestions, QUESTIONS_PER_GAME);
+    const validationErrors = validationResult(req);
 
-    //store selected 10 questions to newGame
-    for ( let index = 0; index < questions.length; index++ ){
-      newGame.questions.push(questions[index]);
+    if (!validationErrors.isEmpty()) {
+      res.status(422).send(validationErrors.mapped());
     }
+    else {
+      const updateData = req.body;
 
-    const saved = await Game.collection.insertOne(newGame);
-    
-    //Check if saving was successfully
-    if ( Object.keys(saved).length !== 0 ){
-      console.log("Started new game");
-      res.status(200).json(saved);
-      console.log(`Saved new game to database ${saved.insertedId}`);
+      const categoryId = new mongoose.Types.ObjectId(updateData.category);
+
+      //delete unfinished games if it is time for that
+      if ((Date.now() - lastRun) >= RUN_DELETE_GAMES_DELAY_MS) {
+        deleteUnfinishedGames();
+      }
+
+      try {
+        const questions = await getRandomQuestions(categoryId, QUESTIONS_PER_GAME);
+
+        const newGame = new Game(updateData);
+
+        //Init some basic data so cannot push wrong data trough API
+        newGame.questions = [];
+        newGame.questionsAnswered = 0;
+
+        //store selected 10 questions to newGame
+        for (let index = 0; index < questions.length; index++) {
+          newGame.questions.push(questions[index]);
+        }
+
+        const saved = await Game.collection.insertOne(newGame);
+
+        //Check if saving was successfully
+        if (Object.keys(saved).length !== 0) {
+          console.log("Started new game");
+          res.status(200).json(saved);
+          console.log(`Saved new game to database ${saved.insertedId}`);
+        }
+        else {
+          console.log("Failed to save new game.");
+          res.status(400).send("Failed to save new game.");
+        }
+      }
+      catch (error) {
+        console.log(`Error while adding game, message:\n ${error}`);
+        res.status(400).send(error);
+      }
     }
-    else{
-      console.log("Failed to save new game.");
-      res.status(400).send("Failed to save new game.");
-    }
-  }
-  catch( error ){
-    console.log(`Error while adding game, message: ${error}`);
-    res.status(400).send(`Error while adding game, message: ${error}`);
-  }
-};
+  },
+];
 
 
 /* 
   Update game by id
 */
+exports.update_game = [
+  check('id', 'Invalid game id')
+    .exists()
+    .isMongoId()
+    .bail({ level: 'request' })
+    .custom((val) => Game.isValidGame(val)),
+  check('answerId', 'Invalid answer id')
+    .optional()
+    .isMongoId(),
+  check('nameUpdate', "nameUpdate must be true or false")
+    .exists()
+    .trim()
+    .notEmpty()
+    .bail({ level: 'request' })
+    .escape()
+    .isIn(["false", "true"]),
+  check('player', 'Player needs a valid name')
+    .optional()
+    .trim()
+    .notEmpty()
+    .isString()
+    .escape(),
+  check('state', "State must be a number")
+    .optional()
+    .trim()
+    .notEmpty()
+    .isNumeric()
+    .escape(),
 
-exports.update_game = async function (req, res) {
-  const id = req.params.id;
+  async (req, res) => {
 
-  //Check the format of id
-  if ( !checkValidityOfId(id) ){
-    console.log(`Error: id: ${id} is not in valid format!`);
-    res.status(400).send(`Error: id: ${id} is not in valid format!`);
-  }
+    const validationErrors = validationResult(req);
 
-  const param = req.body;
 
-  let updateData = null;
-
-  if ( param.nameUpdate ){
-    //update only players name
-    updateData = {
-      "player": param.player,
-    };
-  }
-  else{
-    //run game
-
-    const answerId = param.answerId;
-
-    const gameData = await getGameCurrentState(id);
-
-    let questionsAnswered = gameData[0].questionsAnswered;
-    let score = gameData[0].score;
-    let questionId = gameData[0].questions[questionsAnswered]._id;
-
-    let state = param.state;
-
-    if ( await isCorrectAnswer(answerId, questionId) ){
-      //increase score
-      //todo after timers are done for different difficulty settings then update score logic also
-
-      score += 100;
+    if (!validationErrors.isEmpty()) {
+      res.status(422).send(validationErrors.mapped());
     }
+    else {
 
-    const questionsInGame = gameData[0].questions.length;
+      const id = new mongoose.Types.ObjectId(req.params.id);
 
-    //If player has not answered to all questions in game then ask another question
-    if ( questionsAnswered < (questionsInGame - 1) ){
-      questionsAnswered += 1;
-      state = gameState.QUESTIONS;
+      const param = req.body;
+
+      let updateData = null;
+
+      //checks if updateData only has player name to update or real gamedata
+      if (param.nameUpdate === "true") {
+        updateData = {
+          "player": param.player,
+        };
+      }
+      else {
+
+        const answerId = new mongoose.Types.ObjectId(param.answerId);
+
+        const gameData = await getGameCurrentState(id);
+
+        let questionsAnswered = gameData[0].questionsAnswered;
+        let score = gameData[0].score;
+
+
+        const questionId = new mongoose.Types.ObjectId(gameData[0].questions[questionsAnswered]._id);
+
+
+        let state = param.state;
+
+        if (await isCorrectAnswer(answerId, questionId)) {
+          //increase score
+          //todo after timers are done for different difficulty settings then update score logic also
+
+          score += 100;
+        }
+
+        const questionsInGame = gameData[0].questions.length;
+
+        //If player has not answered to all questions in game then ask another question
+        if (questionsAnswered < (questionsInGame - 1)) {
+          questionsAnswered += 1;
+          state = gameState.QUESTIONS;
+        }
+        else {
+          //player has answered to all questions so to end
+          state = gameState.ENDING;
+        }
+
+        updateData = {
+          "questionsAnswered": questionsAnswered,
+          "score": score,
+          "state": state
+        };
+      }
+
+      try {
+        console.log(`update_game(): Updating game: ${id} data to DB...`);
+        const options = { new: true };
+        const result = await Game.findByIdAndUpdate(id, updateData, options);
+
+        //Check if found any games
+        if (Object.keys(result).length !== 0) {
+          res.status(200).json(result);
+        }
+      }
+      catch (error) {
+        console.log(`update_game(): Error while fetching the game: ${req.params.id}, error message: ${error}`);
+        res.status(400).send(`Error while fetching the game: ${req.params.id}, error message: ${error}`);
+      }
     }
-    else{
-      //player has answered to all questions so to end
-      state = gameState.ENDING;
-    }
-
-    updateData = {
-      "questionsAnswered": questionsAnswered,
-      "score": score,
-      "state": state
-    };
-  }
-
-
-  try{
-    console.log(`update_game(): Updating game: ${id} data to DB...`);
-    const options = { new: true };
-    const result = await Game.findByIdAndUpdate( id, updateData, options );
-    
-    //Check if found any games
-    if ( Object.keys(result).length !== 0 ){
-      res.status(200).json(result);
-    }
-  }
-  catch( error ){
-    console.log(`update_game(): Error while fetching the game: ${req.params.id}, error message: ${error}`);
-    res.status(400).send(`Error while fetching the game: ${req.params.id}, error message: ${error}`);
-  }
-};
+  },
+];
 
 
 
@@ -266,77 +338,129 @@ exports.update_game = async function (req, res) {
 /* 
   Delete game by id
 */
-exports.delete_game = async function (req, res) {
+exports.delete_game = [
+  check('id', 'Invalid game id')
+    .exists()
+    .isMongoId()
+    .custom((val) => Game.isValidGame(val)),
 
-  const id = req.params.id;
+  async (req, res) => {
 
-  //Check the format of id
-  if ( !checkValidityOfId(id) ){
-    console.log(`Error: id: ${id} is not in valid format!`);
-    res.status(400).send(`Error: id: ${id} is not in valid format!`);
-  }
+    const validationErrors = validationResult(req);
 
-  console.log(`Finding game: ${id}`);
-
-  try{
-    const result = await Game.findByIdAndDelete( id );
-    
-    //Check if found any games
-    if ( Object.keys(result).length !== 0 ){
-      console.log(`Deleting game: ${id} data...`);
-      res.status(200).send(`Game data of the game:${id} has been deleted.`);
-      console.log(`Game data of the game:${id} has been deleted.`);
+    if (!validationErrors.isEmpty()) {
+      res.status(422).send(validationErrors.mapped());
     }
-  }
-  catch( error ){
-    console.log(`Error while fetching the game: ${id}, error message: ${error}`);
-    res.status(400).send(`Error while fetching the game: ${id}, error message: ${error}`);
-  }
+    else {
+      const id = new mongoose.Types.ObjectId(req.params.id);
+
+      try {
+        const result = await Game.findByIdAndDelete(id);
+
+        //Check if found any games
+        if (Object.keys(result).length !== 0) {
+          res.status(200).send(`Game data of the game:${id} has been deleted.`);
+          console.log(`Game data of the game:${id} has been deleted.`);
+        }
+      }
+      catch (error) {
+        console.log(`Error while fetching the game: ${id}, error message:\n ${error}`);
+        res.status(400).send(`Error while fetching the game: ${id}, error message:\n ${error}`);
+      }
+    }
+  },
+];
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+//Helper functions etc...
+///////////////////////////////////////////////////////////////////////////////////////////
+
+
+/*
+  Fetch n ammount of random questions from db and check that each has at least one correct answer
+*/
+async function getRandomQuestions(category, n) {
+
+  return await Question.aggregate([
+    {
+      $match: {
+        $and: [
+          {
+            'category': category,
+          },
+          {
+            options: {
+              $elemMatch: {
+                isCorrect: true,
+              },
+            },
+          },
+        ],
+      },
+    },
+    {
+      $sample: {
+        'size': n,
+      },
+    },
+    {
+      $lookup: {
+        from: 'categories',
+        localField: 'category',
+        foreignField: '_id',
+        as: 'category',
+      },
+    },
+  ]);
 };
 
 
+async function deleteUnfinishedGames() {
 
-async function deleteUnfinishedGames(){
-  
   lastRun = Date.now();
 
   console.log("deleteUnfinishedGames(): Finding unfinished games...");
 
-  try{
+  try {
     //If game is updated over hour ago and player has not answered to 10 questions (indexing starts from 0 so thats why -1)
-    const result = await Game.deleteMany( { "updatedAt": { $lt : ( new Date(Date.now() - HOUR) )},
-                                            "questionsAnswered": { $lt : (QUESTIONS_PER_GAME - 1)} });
-    
+    const result = await Game.deleteMany({
+      "updatedAt": { $lt: (new Date(Date.now() - HOUR)) },
+      "questionsAnswered": { $lt: (QUESTIONS_PER_GAME - 1) }
+    });
+
     //Check if found any games
-    if ( result.deletedCount > 0 ){
+    if (result.deletedCount > 0) {
       console.log(`deleteUnfinishedGames(): Deleted ${result.deletedCount} unfinished games.`);
     }
-    else{
+    else {
       console.log("deleteUnfinishedGames(): Did not found any unfinished games");
     }
   }
-  catch( error ){
+  catch (error) {
     console.log(`deleteUnfinishedGames(): Error while trying to delete unfinished games: ${error}`);
   }
 }
 
 
 
-async function getGameCurrentState(id){
-  
-  try{
-    const result = await Game.find( { _id: id } );
+async function getGameCurrentState(gameId) {
+
+  const id = new mongoose.Types.ObjectId(gameId);
+
+  try {
+    const result = await Game.find({ _id: id });
 
     //Check if found any games
-    if ( Object.keys(result).length !== 0 ){
+    if (Object.keys(result).length !== 0) {
       return result;
     }
-    else{
+    else {
       console.log(`getGameCurrentState(): Game with id: ${id} does not exist.`);
       return 0;
     }
   }
-  catch( error ){
+  catch (error) {
     console.log(`getGameCurrentState(): Error while fetching game: ${id}, error message: ${error}`);
     return -1;
   }
@@ -344,19 +468,20 @@ async function getGameCurrentState(id){
 
 
 
-async function isCorrectAnswer(answerId, questionId){
-  let ans = 0;
-  
-  try{
-    const question = await Question.findById( questionId );
-    
-    for(let i = 0; i < question.options.length; i++){
-      if( question.options[i]._id == answerId ){
+async function isCorrectAnswer(ansId, quesId) {
+  const answerId = new mongoose.Types.ObjectId(ansId);
+  const questionId = new mongoose.Types.ObjectId(quesId);
+
+  try {
+    const question = await Question.findById(questionId);
+
+    for (let i = 0; i < question.options.length; i++) {
+      if (question.options[i]._id.equals(answerId)) {
         return question.options[i].isCorrect;
       }
     }
   }
-  catch( error ){
+  catch (error) {
     console.log(`Error while checking is the player's answer correct: ${error}`);
   }
 }

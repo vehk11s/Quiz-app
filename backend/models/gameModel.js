@@ -32,5 +32,13 @@ gameSchema.set('toJSON', {
   },
 });
 
+gameSchema.statics = {
+  isValidGame(id) {
+    return this.findById(id).then((result) => {
+      if (!result) throw new Error('Game not found');
+    });
+  },
+};
+
 const GameModel = mongoose.model('Game', gameSchema);
 module.exports = GameModel;
