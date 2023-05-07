@@ -43,8 +43,9 @@ exports.get_game = [
   check('id', 'Invalid game id or game does not exist')
     .exists()
     .isMongoId()
-    .custom((val) => Game.isValidGame(val))
-    .bail(),
+    .bail()
+    .custom((val) => Game.isValidGame(val)),
+    
 
   async (req, res) => {
 
@@ -81,6 +82,7 @@ exports.get_games_by_category = [
   check('category', 'Invalid category id or category does not exist')
     .exists()
     .isMongoId()
+    .bail()
     .custom((val) => Category.isValidCategory(val)),
 
   async (req, res) => {
@@ -128,44 +130,40 @@ exports.add_game = [
   check('category', 'Invalid category id')
     .exists()
     .isMongoId()
-    .custom((val) => Category.isValidCategory(val))
-    .bail(),
+    .bail({ level: 'request' })
+    .custom((val) => Category.isValidCategory(val)),
   check('player', 'Player needs a valid name')
     .exists()
     .trim()
     .notEmpty()
+    .bail()
     .isString()
-    .escape()
-    .bail(),
+    .escape(),
   check('difficulty', 'Difficulty must be: easy, medium or hard')
     .optional()
     .trim()
     .notEmpty()
     .isString()
     .escape()
-    .isIn(['easy', 'medium', 'hard'])
-    .bail(),
+    .isIn(['easy', 'medium', 'hard']),
   check('score', "Score must be a number")
     .optional()
     .trim()
     .notEmpty()
     .isNumeric()
-    .escape()
-    .bail(),
+    .escape(),
   check('state', "State must be a number")
     .optional()
     .trim()
     .notEmpty()
     .isNumeric()
-    .escape()
-    .bail(),
+    .escape(),
   check('questionsAnswered', "questionsAnswered must be a number")
     .optional()
     .trim()
     .notEmpty()
     .isNumeric()
-    .escape()
-    .bail(),
+    .escape(),
 
 
   async (req, res) => {
@@ -228,33 +226,30 @@ exports.update_game = [
   check('id', 'Invalid game id')
     .exists()
     .isMongoId()
-    .custom((val) => Game.isValidGame(val))
-    .bail(),
+    .bail({ level: 'request' })
+    .custom((val) => Game.isValidGame(val)),
   check('answerId', 'Invalid answer id')
     .optional()
-    .isMongoId()
-    .bail(),
+    .isMongoId(),
   check('nameUpdate', "nameUpdate must be true or false")
     .exists()
     .trim()
     .notEmpty()
+    .bail({ level: 'request' })
     .escape()
-    .isIn(["false", "true"])
-    .bail(),
+    .isIn(["false", "true"]),
   check('player', 'Player needs a valid name')
     .optional()
     .trim()
     .notEmpty()
     .isString()
-    .escape()
-    .bail(),
+    .escape(),
   check('state', "State must be a number")
     .optional()
     .trim()
     .notEmpty()
     .isNumeric()
-    .escape()
-    .bail(),
+    .escape(),
 
   async (req, res) => {
 
