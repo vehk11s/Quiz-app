@@ -14,11 +14,17 @@
     #1f0012 89.5%
   );
 
-  --primary-white: #f5ebeb;
+  --primary-white: #f0e5e5;
   --quiz-correct: #257d3d;
   --quiz-incorrect: #980b24;
 
   accent-color: var(--primary-pink-light);
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --primary-pink: #9f003a;
+  }
 }
 
 * {
@@ -116,6 +122,10 @@ nav {
 }
 
 /* INDEX PAGE */
+#screen h1 {
+  margin-bottom: -2rem;
+}
+
 .options-2 {
   grid-template-rows: repeat(2, auto);
   gap: 2rem;
@@ -137,10 +147,12 @@ nav {
   display: flex;
   place-content: center;
   position: relative;
+  color: var(--primary-white);
   border: 2px solid var(--primary-pink);
   border-radius: 8px;
   cursor: pointer;
-  font-size: 1.15rem;
+  font-size: 1.25rem;
+  letter-spacing: 0.75px;
 
   height: 5rem;
   padding: 16px 8px;
@@ -154,6 +166,10 @@ nav {
   opacity: 0;
 }
 
+#chooseCategory + fieldset label {
+  text-transform: capitalize;
+}
+
 /* Adds visible focus outline even when the actual input element is hidden */
 .options-2 label:focus-within {
   outline: 2px solid white;
@@ -165,6 +181,7 @@ nav {
 }
 
 .options-2 label:has(input[type='radio']:checked) {
+  font-weight: 600;
   border: 2px solid var(--primary-pink);
   background-color: var(--primary-pink);
 }
@@ -220,6 +237,7 @@ ul,
 li {
   color: inherit;
   font-family: var(--font-primary);
+  line-height: 1.55;
 }
 
 h1,
@@ -247,6 +265,7 @@ h4 {
   font-size: 2rem;
 }
 
+h1.title,
 p.title,
 a.title {
   font-size: 2.5rem;

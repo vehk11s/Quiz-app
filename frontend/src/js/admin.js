@@ -3,6 +3,7 @@ import { getCategories } from '../api/categoryApi.js';
 import { drawForm } from './questionForm.js';
 import { categoryForm, categoryDeleting } from './categoryForm.js';
 import { drawMessage } from './message.js';
+import { decodeString } from './formHelpers.js';
 
 /* 
 Runs when the page is refreshed. 
@@ -130,7 +131,7 @@ function listQuestions(questions, selectedCategory) {
       // Draw list item
       const questionItem = document.createElement('li');
       questionItem.id = element.id;
-      questionItem.innerHTML = element.question;
+      questionItem.textContent = decodeString(element.question);
       questionItem.classList.add('list__question');
 
       // Draw nested list
@@ -139,7 +140,7 @@ function listQuestions(questions, selectedCategory) {
       // Draw list items for options
       element.options.forEach((option) => {
         const optionItem = document.createElement('li');
-        optionItem.innerHTML = `${option.option}`;
+        optionItem.textContent = decodeString(option.option);
         optionsList.appendChild(optionItem);
       });
 
@@ -217,7 +218,6 @@ function drawHeaderButtons(category) {
 
   sectionHeader.appendChild(buttonDiv);
 }
-
 
 // Helper function
 function createBtn(type, elem, id) {

@@ -154,6 +154,8 @@ function drawQuestion(question) {
   // Prevent removing all question sets from the form
   if (visibleQuestions > 1) {
     const btn = createRemoveBtn();
+    btn.title = `Remove ${totalQuestions}. question`;
+    btn.setAttribute('aria-description', `Remove ${totalQuestions}. question`);
     btn.addEventListener('click', (e) => {
       handleRemove(e);
     });
