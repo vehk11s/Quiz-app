@@ -1,5 +1,6 @@
 import { drawCategoryButtons } from './categorySelection.js';
 import { getNextQuestion } from '../api/game/getNextQuestion.js';
+import { decodeString } from './formHelpers.js';
 
 /*
   TODO: Div or other common place for all errors, warnings and user messages
@@ -145,7 +146,7 @@ export async function drawQuestionPhase(gameData) {
     //set title
     const title = document.createElement('p');
     title.classList.add('title');
-    title.innerText = question.category[0].category;
+    title.innerHTML = question.category[0].category;
 
     screenDiv.appendChild(title);
 
@@ -154,7 +155,7 @@ export async function drawQuestionPhase(gameData) {
 
     const questionP = document.createElement('p');
     questionP.classList.add('lg');
-    questionP.innerText = `${questionNumber}. ${question.question}`;
+    questionP.innerHTML = `${questionNumber}. ${question.question}`;
 
     screenDiv.appendChild(questionP);
 
@@ -169,7 +170,7 @@ export async function drawQuestionPhase(gameData) {
       const optionButton = document.createElement('button');
       optionButton.classList.add('btn');
       optionButton.classList.add('btn-option');
-      optionButton.innerText = `${question.options[index].option}`;
+      optionButton.innerHTML = `${question.options[index].option}`;
       optionButton.value = question.options[index]._id;
 
       optionsDiv.appendChild(optionButton);
@@ -244,7 +245,7 @@ export async function drawEndingPhase(gameData) {
   nameInput.id = 'nameInput';
 
   if ( playerName ){
-    nameInput.value = playerName;
+    nameInput.value = decodeString(playerName);
   }
 
   nameLabel.insertAdjacentElement('beforeend', nameInput);
