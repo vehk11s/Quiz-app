@@ -13,7 +13,7 @@ import {
   createInput,
   createBtn,
   createDiv,
-  decodeString
+  decodeString,
 } from './formHelpers.js';
 import { getQuestions } from '../api/questionApi.js';
 import { drawContent } from './admin.js';
@@ -104,6 +104,8 @@ function drawCategory(category) {
   // Prevent removing all question sets from the form
   if (visibleCategories > 1) {
     const btn = createRemoveBtn();
+    btn.title = `Remove ${totalCategories}. category`;
+    btn.setAttribute('aria-description', `Remove ${totalCategories}. category`);
     btn.addEventListener('click', (e) => {
       handleRemove(e);
     });

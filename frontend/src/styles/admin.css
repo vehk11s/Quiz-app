@@ -24,7 +24,7 @@ aside {
 section {
   padding: 2rem;
   grid-area: 2 / 2 / 3 / 3;
-  overflow: auto;
+  overflow-y: auto;
   height: 100%;
   border-top: 1px solid black;
   border-left: 1px solid black;
@@ -109,6 +109,11 @@ legend {
   column-gap: 8px;
 }
 
+.form__footer {
+  display: inline-flex;
+  gap: 1rem;
+}
+
 .btn-icon {
   position: absolute;
   top: -32px;
@@ -130,6 +135,8 @@ li li svg {
 }
 
 .list__footer {
+  display: inline-flex;
+  gap: 1rem;
   padding-top: 0.5rem;
 }
 
@@ -150,10 +157,17 @@ dialog {
   max-height: 90%;
   overflow-y: auto;
   margin: auto;
+  position: relative;
 }
 
 dialog::backdrop {
   background-color: rgba(0, 0, 0, 0.3);
+}
+
+dialog > button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
 }
 
 .form__category {
