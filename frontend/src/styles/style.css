@@ -106,6 +106,7 @@ nav {
 }
 
 #screen {
+  max-width: 900px;
   width: 90%;
   height: 80%;
   text-align: center;
