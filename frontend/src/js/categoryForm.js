@@ -13,6 +13,7 @@ import {
   createInput,
   createBtn,
   createDiv,
+  decodeString
 } from './formHelpers.js';
 import { getQuestions } from '../api/questionApi.js';
 import { drawContent } from './admin.js';
@@ -117,7 +118,7 @@ function drawCategory(category) {
 
   // Set default value for editing form
   if (category) {
-    categoryInput.value = category.category;
+    categoryInput.value = decodeString(category.category);
   }
 
   categoryLabel.appendChild(categoryInput);
