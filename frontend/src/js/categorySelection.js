@@ -18,7 +18,7 @@ export async function drawCategoryButtons() {
   
         const input = document.createElement('input');
         input.type = 'radio';
-        input.id = decodeString(categoryName);
+        input.id = categoryId;
         input.name = 'category';
         input.value = categoryId;
   
