@@ -1,6 +1,6 @@
 # Quiz-app
 
-This project was purely desinged and implemented by contributors mentioned at the end of the file. There were no guidance or requirements other than usage of node.js and mongoDB for this project.
+This project was purely desinged and implemented by contributors mentioned at the end of the file. There were no guidance or requirements other than usage of Node.js and MongoDB for this project.
 
 **Basic rules**:
 - Each question has four answer options
@@ -11,7 +11,7 @@ This project was purely desinged and implemented by contributors mentioned at th
 - 3 different categories of questions
 
 
-##Techniques##
+## Techniques
 
 The app is two part program: backend and frontend.
 
@@ -21,18 +21,18 @@ Quiz-app is created using following techniques:
 - MongoDB
 
 Backend is made with node.js and mongodb using following dependencies: 
-- Express;
-- Nodemon; 
-- Mongoose;
-- Dotenv;
-- express-validator;
+- Express
+- Nodemon
+- Mongoose
+- Dotenv
+- express-validator
 - CORS
 
-Frontend is made with html5, CSS3 and vanilla javascript. Accessibility of the frontend is one of the highest goals of this project.
+Frontend is made with HTML5, CSS3 and vanilla JavaScript. Accessibility of the frontend is one of the highest goals of this project.
 
-There are going to be custom API calls between frontend and backend and needed data is packed with JSON. After the API calls are implemented then this readme is also updated.
+The app has custom API calls between frontend and backend and the needed data is packed in JSON.
 
-##Installation##
+## Installation
 
 1. Pull repo from GitHub
 2. run npm install command at backend folder to install all necessary dependencies
@@ -43,7 +43,7 @@ There are going to be custom API calls between frontend and backend and needed d
 
     
 
-##Contributors##
+## Contributors
 - vehk11s
 - iinajenina
 - mintteal
